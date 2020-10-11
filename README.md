@@ -14,9 +14,9 @@
 - Semantic UI React 설치
 
 ## 작업 중 참고 자료
-유튜브 : 코딩견히치(https://www.youtube.com/channel/UC7ue1pZBUYiz_S3OKE7g_cQ)
-유튜브 : 생활코딩(https://www.youtube.com/channel/UCvc8kv-i5fvFTJBFAk6n1SA)
-Semantic UI React(https://react.semantic-ui.com/)
+- 유튜브 : 코딩견히치(https://www.youtube.com/channel/UC7ue1pZBUYiz_S3OKE7g_cQ)
+- 유튜브 : 생활코딩(https://www.youtube.com/channel/UCvc8kv-i5fvFTJBFAk6n1SA)
+- Semantic UI React(https://react.semantic-ui.com/)
 
 ## 10.11(일) 작성
 - 메인페이지 상단바 2개 (홈, 로그인, 회원가입, 카테고리 선택, 검색 기능 연결 필요)
