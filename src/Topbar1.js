@@ -1,5 +1,6 @@
 import React from "react";
 import {Menu} from "semantic-ui-react";
+import {Link} from "react-router-dom";
 
 class Topbar1 extends React.Component {
     state = {}
@@ -21,6 +22,7 @@ class Topbar1 extends React.Component {
                 </Menu.Item>
                 <Menu.Menu position='right'>
                     <Menu.Item
+                        as={Link} to="/Login"
                         name='login'
                         active={activeItem === 'login'}
                         onClick={this.handleItemClick}
