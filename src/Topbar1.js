@@ -1,6 +1,6 @@
 import React from "react";
 import {Menu} from "semantic-ui-react";
-import {BrowserRouter as Router, Link} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 
 class Topbar1 extends React.Component {
     state = {}
@@ -35,7 +35,7 @@ class Topbar1 extends React.Component {
                     </Menu.Item>
 
 
-                    <Menu.Item
+                    <Menu.Item as={Link} to='/signup'
                         size='large'
                         name='signup'
                         active={activeItem === 'signup'}
