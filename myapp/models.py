@@ -9,8 +9,14 @@ from django.db.models import \
 MAX_STR_LEN = 100
 
 
+
 class Genre(Model):
     id = AutoField(primary_key=True, auto_created=True, editable=False)
+    name = CharField(null=False, max_length=30)
+
+
+class Actor(Model):
+    id = IntegerField(primary_key=True, editable=False)
     name = CharField(null=False, max_length=30)
 
 
@@ -19,31 +25,42 @@ class Movie(Model):
     영화 정보입니다.
     """
 
-    id = BigAutoField(primary_key=True, auto_created=True, editable=False)
+    id = IntegerField(primary_key=True, editable=False)
     name = CharField(null=False, max_length=MAX_STR_LEN)
     opened_at = DateField(null=True)
+
     genres = ManyToManyField('Genre')
+    actors = ManyToManyField("Actor")
+
     thumb_url = CharField(null=True, max_length=256) # 복잡한 URL 고려
     img_url = CharField(null=True, max_length=256) # 복잡한 URL 고려
     description = TextField(null=True)
 
 
-class MovieUser(Model):
-    """
-    외부 영화 사이트 (네이버 영화) 에서 파싱된 사용자 정보입니다.
-    """
-    id = CharField(primary_key=True, max_length=MAX_STR_LEN)
+class MovieParseHistory(Model):
+    id = IntegerField(primary_key=True, editable=False)
+    result = IntegerField(null=False)
+
+    updated_at = DateTimeField(auto_created=True, auto_now_add=True)
+
+## 사용자 정보 삭제 - 익명 사용자로 대체함
+
+# class MovieUser(Model):
+#     """
+#     외부 영화 사이트 (네이버 영화) 에서 파싱된 사용자 정보입니다.
+#     """
+# id = IntegerField(primary_key=True, max_length=MAX_STR_LEN)
 
 
 class MovieUserComment(Model):
-    id = BigAutoField(primary_key=True, auto_created=True, editable=False)
-    movie_user_id = ForeignKey(MovieUser,
-                         null=False, related_name='comments_movieuser', on_delete=CASCADE)
+    id = IntegerField(primary_key=True,editable=False)
     movie_id = ForeignKey(Movie,
                           null=False, related_name='comments_movieuser', on_delete=1)
     score = IntegerField(null=False)
     body = TextField(null=True)
 
+
+#### ---- 실 서비스 사용자 데이터 ----
 
 class User(Model):
     """

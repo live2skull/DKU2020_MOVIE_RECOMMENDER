@@ -4,7 +4,7 @@ import lxml.html
 from lxml.html import HtmlElement
 from parse import parse
 
-from .raw_models import RMovie
+from .raw_models import RMovie, RMovieUserComment
 
 class NaverMovieParser:
     '''
@@ -55,8 +55,55 @@ class NaverMovieParser:
 
 
     def parse_recommends_from_movie_page(self, raw: str) -> Generator:
-        raise NotImplementedError()
+        """
+        각 영화 페에지의 평점 정보를 파싱합니다.
+        :param raw:
+        :return:
+        """
+
+        html = self.init_lxml(raw)
+        count = 0
+
+        for _recommend in html.xpath("//div[@class='score_result']/ul/li"):
+            recommend = RMovieUserComment() # type: RMovieUserComment
+            recommend.score = int(_recommend.xpath("//div[@class='star_score]/em")[0].text_content())
+            recommend.body = str(_recommend.xpath(
+                ".//div[@class='score_reple']//span[@id != 'ico_viewer']")[0].text_content()).strip()
+
+            ## id 정보 파싱
+            report = _recommend.xpath(".//div[@class='score_reple']/dl/dd/a")[0].attrib['onclick']
+            report = report[:-len("', 'point_after', false);return false;")]
+            recommend.id = int(report[report.rindex("'") + 1:])
+
+            count += 1
+            yield recommend
+
+        if count == 0:
+            yield from []
 
 
     def parse_recommends_from_user_page(self, raw: str) -> Generator:
-        raise NotImplementedError()
+        """
+        각 사용자별 페이지의 평점 정보를 파싱합니다.
+        :param raw:
+        :return:
+        """
+
+        html = self.init_lxml(raw)
+        count = 0
+
+        for _recommend in html.xpath("//table[@class='list_netizen']/tbody/tr"):
+            recommend = RMovieUserComment() # type: RMovieUserComment
+            recommend.id = int(_recommend.xpath("./td[@class='ac num']")[0].text_content())
+            recommend.score = int(_recommend.xpath(".//div[@class='list_netizen_score']//em")[0].text_content())
+            recommend.body = _recommend.xpath("./td[@class='title']")[0].text_content()
+
+            # 사용자 페이지에서 가져오는 것이므로, 영화 고유번호가 필요함
+            movie_link = _recommend.xpath("./td[@class='title']/a")[0].attrib['href']
+            recommend.movie_id = int(parse("?st=mcode&sword={}&target=after", movie_link))
+
+            count += 1
+            yield recommend
+
+        if count == 0:
+            yield from []

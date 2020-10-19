@@ -122,7 +122,7 @@ class NaverMovieRequester(Session):
         return ret
 
 
-    def request_recommends_until_end(self, user_id:int, start_page: int=1) -> Generator:
+    def request_user_recommends_until_end(self, user_id:int, start_page: int=1) -> Generator:
         '''
         지정한 사용자 고유 번호로부터 가용한 페이지까지 댓글 페이지를 불러옵니다.
 
