@@ -1,8 +1,8 @@
 import React from 'react';
 import Main from './Main';
-import Login from './Login';
-import Signup from "./Signup";
-import Movieinfo from "./Movieinfo";
+import Login from './User/Login';
+import Signup from "./User/Signup";
+import Movieinfo from "./Movie/Movieinfo";
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 
 class Routes extends React.Component {

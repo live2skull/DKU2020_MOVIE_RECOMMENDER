@@ -1,6 +1,6 @@
 import React from "react";
 import {Form, Button, Segment, Message, Grid} from "semantic-ui-react";
-import Topbar1 from "./Topbar1";
+import Topbar1 from "../Menu/Topbar1";
 
 class Login extends React.Component {
     render() {

@@ -1,7 +1,7 @@
 import React from "react";
 import {Segment, Header, Image, Rating, Comment, Form, Button} from "semantic-ui-react";
-import Topbar1 from "./Topbar1";
-import Topbar2 from "./Topbar2";
+import Topbar1 from "../Menu/Topbar1";
+import Topbar2 from "../Menu/Topbar2";
 import UserComment from "./UserComment"
 import eximage from "./ex_image.jpg"
 import usericon from "./usericon.png";

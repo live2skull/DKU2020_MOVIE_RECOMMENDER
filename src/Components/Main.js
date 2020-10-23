@@ -1,7 +1,7 @@
 import React from 'react';
-import Topbar1 from './Topbar1';
-import Topbar2 from './Topbar2';
-import Movielist from "./Movielist";
+import Topbar1 from './Menu/Topbar1';
+import Topbar2 from './Menu/Topbar2';
+import Movielist from "./Movie/Movielist";
 
 class Main extends React.Component {
     render() {
