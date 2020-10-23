@@ -6,8 +6,6 @@ class Topbar1 extends React.Component {
     state = {}
 
     handleItemClick = (e, {name}) => this.setState({activeItem: name})
-
-    // 회원가입 페이지 필요
     render() {
         const {activeItem} = this.state
 
