@@ -55,7 +55,7 @@ class MovieParseHistory(Model):
 class MovieUserComment(Model):
     id = IntegerField(primary_key=True,editable=False)
     movie = ForeignKey(Movie,
-                          null=False, related_name='comments_movieuser', on_delete=1)
+                          null=False, related_name='comments_movie', on_delete=1)
     score = IntegerField(null=False)
     body = TextField(null=True)
 
