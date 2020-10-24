@@ -11,7 +11,7 @@ MAX_STR_LEN = 100
 
 
 class Genre(Model):
-    id = AutoField(primary_key=True, auto_created=True, editable=False)
+    id = AutoField(primary_key=True, editable=False)
     name = CharField(null=False, max_length=30)
 
 

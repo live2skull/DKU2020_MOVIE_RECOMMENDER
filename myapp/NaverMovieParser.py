@@ -29,16 +29,40 @@ class NaverMovieParser:
         ret.thumb_url = html.xpath("//div[@class='poster']/a/img")[0].attrib["src"]
         ret.description = html.xpath("//p[@class='con_tx']")[0].xpath('string()')
 
-        open_year = int(html.xpath("//p[@class='info_spec']/span[4]/a[1]")[0].text_content())
-        _, open_month, open_day = html.xpath("//p[@class='info_spec']/span[4]/a[2]")[0].text_content().split('.')
-        ret.opened_at = date(year=open_year, month=int(open_month), day=int(open_day))
+        parsed_open_date = 0
+
+        for i in range(1, 6):
+            _open_year = html.xpath("//p[@class='info_spec']/span[%s]/a[1]" % i)
+            if not len(_open_year): continue
+
+
+            if not _open_year[0].text_content().isdigit(): continue
+            open_year = int(_open_year[0].text_content())
+
+            _, open_month, open_day = html.xpath("//p[@class='info_spec']/span[%s]/a[2]" % i)[0].text_content().split('.')
+            ret.opened_at = date(year=open_year, month=int(open_month), day=int(open_day))
+            parsed_open_date += 1
+            break
+
+        if parsed_open_date == 0:
+            ret.opened_at = date.min
+            Warning("%s 영화의 개봉일자를 탐색하지 못했습니다." % ret.name)
+
+        ret.actors = []
+
+        for actor in html.xpath("//div[@class='info_spec2']/dl[@class='step2']/dd/a"):
+            name = actor.text_content().strip()
+            actor_id = int(parse("/movie/bi/pi/basic.nhn?code={}", actor.attrib['href']).fixed[0])
+            ret.actors.append((actor_id, name))
 
         ret.genres = []
 
         for genre in html.xpath("//p[@class='info_spec']/span/a"):
-            name = genre.text_content()
-            genre_id = int(parse("/movie/sdb/browsing/bmovie.nhn?genre={}", genre.attrib['href'])[0])
-            ret.genres.append((name, genre_id))
+            name = genre.text_content().strip()
+            _parsed = parse("/movie/sdb/browsing/bmovie.nhn?genre={}", genre.attrib['href'])
+            if _parsed is None: break
+            genre_id = int(_parsed.fixed[0])
+            ret.genres.append((genre_id, name))
 
         return ret
 
@@ -100,7 +124,7 @@ class NaverMovieParser:
 
             # 사용자 페이지에서 가져오는 것이므로, 영화 고유번호가 필요함
             movie_link = _recommend.xpath("./td[@class='title']/a")[0].attrib['href']
-            recommend.movie_id = int(parse("?st=mcode&sword={}&target=after", movie_link))
+            recommend.movie_id = int(parse("?st=mcode&sword={}&target=after", movie_link).fixed[0])
 
             count += 1
             yield recommend

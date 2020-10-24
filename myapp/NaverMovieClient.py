@@ -4,7 +4,7 @@ from .NaverMovieParser import NaverMovieParser
 from .NaverMovieRequester import NaverMovieRequester
 
 from .raw_models import RMovie, RMovieUserComment
-from .models import Movie, Genre, MovieUserComment, MovieParseHistory
+from .models import Movie, Genre, Actor, MovieUserComment, MovieParseHistory
 
 
 class NaverMovieClient:
@@ -25,7 +25,7 @@ class NaverMovieClient:
         '''
 
         raw = self.requester.request_movie_info(movie_id) # type: str
-        if raw.find("영화 코드값 오류입니다.") == -1:
+        if raw.find("영화 코드값 오류입니다.") != -1:
             return None
 
         robj = self.parser.parse_movie_info(raw) # type: RMovie
@@ -38,10 +38,18 @@ class NaverMovieClient:
         genres = []
         ## 장르 생성
         for genre in robj.genres:
-            _id = genre[0]
-            _name = genre[1]
+            _id, _name = genre
             genres.append(
-                Genre.objects.get_or_create(id=_id, defaults={'name' : _name})[0]
+                Genre.objects.get_or_create(id=_id, name=_name)[0]
+            )
+
+
+        actors = []
+        ## 배우 생성
+        for actor in robj.actors:
+            _id, _name = actor
+            actors.append(
+                Actor.objects.get_or_create(id=_id, name=_name)[0]
             )
 
         obj, created = Movie.objects.update_or_create(id=movie_id, defaults={
@@ -57,8 +65,12 @@ class NaverMovieClient:
         ### 리스트 하나씩 확인하여야 하며, 추가된 것 / 제거된 것에 대한 필터링이 필요함.
         ### 현재는 해당 데이터가 변경될 가능성은 없으므로, 새로 생성됬을 때 추가함.
         for genre in genres:
-            ## TODO: ManyToMany 자동 저장 가능?
-            obj.genres.add(genre)
+            if genre not in obj.genres.all():
+                obj.genres.add(genre)
+
+        for actor in actors:
+            if actor not in obj.actors.all():
+                obj.actors.add(actor)
 
         obj.save()
         return obj

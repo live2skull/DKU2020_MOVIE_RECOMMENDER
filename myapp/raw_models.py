@@ -6,6 +6,10 @@ class RMovie:
 
     # tuple : (id, name)
     genres = None # type: list
+
+    # tuple: (id, name)
+    actors = None # type: list
+
     thumb_url = None # type: str
     description = None # type: str
 

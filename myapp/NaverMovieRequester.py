@@ -33,7 +33,7 @@ class NaverMovieRequester(Session):
             'code' : movie_id
         }
 
-        ret = self.get(url=HOME % '/movie/bi/mi/basic.nhn', params=params).text
+        ret = self.get(url=HOME % '/movie/bi/mi/basic.nhn', params=params, verify=False).text
         return ret
 
 
@@ -49,7 +49,7 @@ class NaverMovieRequester(Session):
             'movieCode': movie_id
         }
 
-        ret = self.get(url=HOME % '/movie/bi/mi/photoViewPopup.nhn', params=params).text
+        ret = self.get(url=HOME % '/movie/bi/mi/photoViewPopup.nhn', params=params, verify=False).text
         return ret
 
 
@@ -74,7 +74,7 @@ class NaverMovieRequester(Session):
             'page' : page
         }
 
-        ret = self.get(url=HOME % '/movie/bi/mi/pointWriteFormList.nhn', params=params).text
+        ret = self.get(url=HOME % '/movie/bi/mi/pointWriteFormList.nhn', params=params, verify=False).text
         return ret
 
 
@@ -118,7 +118,7 @@ class NaverMovieRequester(Session):
             'page' : page
         }
 
-        ret = self.get(url=HOME % '/movie/point/af/list.nhn', params=params).text
+        ret = self.get(url=HOME % '/movie/point/af/list.nhn', params=params, verify=False).text
         return ret
 
 
