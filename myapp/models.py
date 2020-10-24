@@ -4,7 +4,7 @@ from django.db.models import Model, CASCADE
 from django.db.models import ForeignKey, OneToOneField
 from django.db.models import \
     CharField, SmallIntegerField, IntegerField, BigAutoField, TextField, \
-    BinaryField, DecimalField, DateTimeField, DateField, AutoField, ManyToManyField
+    BinaryField, DecimalField, DateTimeField, DateField, AutoField, ManyToManyField, BooleanField
 
 MAX_STR_LEN = 100
 
@@ -54,10 +54,12 @@ class MovieParseHistory(Model):
 
 class MovieUserComment(Model):
     id = IntegerField(primary_key=True,editable=False)
-    movie_id = ForeignKey(Movie,
+    movie = ForeignKey(Movie,
                           null=False, related_name='comments_movieuser', on_delete=1)
     score = IntegerField(null=False)
     body = TextField(null=True)
+
+    is_spoiler = BooleanField(null=False, default=False)
 
 
 #### ---- 실 서비스 사용자 데이터 ----

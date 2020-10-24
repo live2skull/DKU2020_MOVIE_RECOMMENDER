@@ -90,9 +90,17 @@ class NaverMovieParser:
 
         for _recommend in html.xpath("//div[@class='score_result']/ul/li"):
             recommend = RMovieUserComment() # type: RMovieUserComment
-            recommend.score = int(_recommend.xpath("//div[@class='star_score]/em")[0].text_content())
-            recommend.body = str(_recommend.xpath(
-                ".//div[@class='score_reple']//span[@id != 'ico_viewer']")[0].text_content()).strip()
+            recommend.score = int(_recommend.xpath("//div[@class='star_score']/em")[0].text_content())
+            # 스포일러 멘트는 별도의 설정이 필요함.
+            temp_body = str(_recommend.xpath(".//div[@class='score_reple']//span[@id != 'ico_viewer']")[0].text_content()).strip()
+
+            if temp_body.find('스포일러가 포함된 감상평입니다.') == 0:
+                recommend.is_spoiler = True
+                recommend.body = str(_recommend.xpath(
+                    ".//span[contains(@id, '_filtered_ment_')]")[0].text_content()).strip()
+            else:
+                recommend.is_spoiler = False
+                recommend.body = temp_body
 
             ## id 정보 파싱
             report = _recommend.xpath(".//div[@class='score_reple']/dl/dd/a")[0].attrib['onclick']

@@ -19,3 +19,5 @@ class RMovieUserComment:
     movie_id = None # type: int
     score = None # type: int
     body = None # type: str
+
+    is_spoiler = None # type: bool

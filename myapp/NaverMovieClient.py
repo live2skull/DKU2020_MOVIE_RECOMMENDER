@@ -85,15 +85,21 @@ class NaverMovieClient:
 
         count = 0
 
+        if not Movie.objects.filter(id=movie_id).exists():
+            raise ValueError("id=%s 영화는 아직 불러오지 않았습니다." % movie_id)
+
+        movie = Movie.objects.get(id=movie_id) # type: Movie
+
         for raw in self.requester.request_movie_recommends_until_end(movie_id=movie_id, start_page=1):
             for robj in self.parser.parse_recommends_from_movie_page(raw=raw): # type: RMovieUserComment
         
                 ## 영화를 먼저 파싱한 상태라고 가정합니다.
                 obj, created = MovieUserComment.objects.update_or_create(
-                    id=robj.id, movie_id=robj.movie_id,
+                    id=robj.id, movie=movie,
                     defaults={
                         "score" : robj.score,
-                        "body" : robj.body
+                        "body" : robj.body,
+                        "is_spoiler" : robj.is_spoiler
                     }
                 )
                 count += 1
