@@ -45,15 +45,22 @@ class MovieParseHistory(Model):
 
 ## 사용자 정보 삭제 - 익명 사용자로 대체함
 
-# class MovieUser(Model):
-#     """
-#     외부 영화 사이트 (네이버 영화) 에서 파싱된 사용자 정보입니다.
-#     """
-# id = IntegerField(primary_key=True, max_length=MAX_STR_LEN)
+class MovieUser(Model):
+    """
+    외부 영화 사이트 (네이버 영화) 에서 파싱된 사용자 정보입니다.
+    """
+    # 내부 고유 값
+    id = IntegerField(primary_key=True)
+
+    nickname = CharField(null=False, max_length=MAX_STR_LEN)
+    striped_id = CharField(null=False, max_length=MAX_STR_LEN)
 
 
 class MovieUserComment(Model):
     id = IntegerField(primary_key=True,editable=False)
+    user_id = ForeignKey(MovieUser,
+        null=False, related_name='comments', on_delete=CASCADE
+    )
     movie = ForeignKey(Movie,
                           null=False, related_name='comments_movie', on_delete=1)
     score = IntegerField(null=False)
@@ -81,7 +88,7 @@ class UserComment(Model):
     """
     id = BigAutoField(primary_key=True, auto_created=True, editable=False)
     user_id = ForeignKey(User,
-                         null=False, related_name='comments_user', on_delete=CASCADE)
+                         null=False, related_name='comments', on_delete=CASCADE)
     movie_id = ForeignKey(Movie,
                           null=False, related_name='comments_user', on_delete=CASCADE)
     score = IntegerField(null=False)
