@@ -58,9 +58,7 @@ class MovieUser(Model):
 
 class MovieUserComment(Model):
     id = IntegerField(primary_key=True,editable=False)
-    user_id = ForeignKey(MovieUser,
-        null=False, related_name='comments', on_delete=CASCADE
-    )
+    user_id = ForeignKey(MovieUser, null=True, related_name='comments', on_delete=CASCADE)
     movie = ForeignKey(Movie,
                           null=False, related_name='comments_movie', on_delete=1)
     score = IntegerField(null=False)
