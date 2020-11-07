@@ -26,9 +26,11 @@ load_dotenv()
 SECRET_KEY = getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False if getenv('PRODUCTION') is not None else True
 
-ALLOWED_HOSTS = []
+_production = getenv('PRODUCTION')
+DEBUG = True if _production is not None and bool(_production) else False
+
+ALLOWED_HOSTS = [] if not DEBUG else [getenv("SERVICE_HOST"), "127.0.0.1"]
 
 
 # Application definition

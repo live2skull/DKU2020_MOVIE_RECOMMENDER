@@ -1,5 +1,6 @@
 import warnings
-from typing import Generator, List
+from decimal import Decimal
+from typing import Generator, List, Set
 
 from django.db.models import QuerySet
 
@@ -10,9 +11,9 @@ from .models import Movie, Genre, Actor, MovieUserComment, MovieParseHistory, Mo
 from .models import User, UserComment
 
 class MovieRecommendation:
-    pass
 
-    def get_recommendations_user_based(self, user: User, weight=2) -> List[Movie]:
+
+    def get_recommendations_user_based(self, user: User, weight=2) -> Set[Movie]:
         """
         User based 알고리즘으로 추천 영화 리스트를 반환합니다.
 
@@ -21,29 +22,34 @@ class MovieRecommendation:
         :return: 추천될 영화 리스트입니다.
         """
 
-        userComments = list(user.comments_user.all()) # type: List[UserComment]
+        userComments = list(user.comments.all()) # type: List[UserComment]
 
         # 사용자의 영화 평점이 존재하지 않는 경우, 진행할 수 없습니다.
         if not len(userComments):
-            return []
+            return set()
 
         querySet = MovieUser.objects.all() # type: QuerySet
 
         # 지정한 허용지 weight와 영화 평점을 가지고, 사용자와 비숏한 영화를 평가한 사용자 정보를 불러옵니다.
-        for userComment in userComments: # type: UserComment
+        for movieUserComment in userComments: # type: MovieUserComment
             ## 허용치 값을 지정합니다.
 
-            score_min = 0 if userComment.score - weight < 0 else userComment.score - weight
-            score_max = 10 if userComment.score + weight > 10 else userComment.score + weight
+            score_min = 0 if movieUserComment.score - weight < 0 else movieUserComment.score - weight
+            score_max = 10 if movieUserComment.score + weight > 10 else movieUserComment.score + weight
 
             querySet = querySet.filter(
                 comments__score__gte=score_min, comments__score__lte=score_max)
 
 
+        ## Model : 객체 클래스 및 pk 값에 따라 equals 기능 지원함!
+        movies_set = set() # type: Set[Movie]
+
         matchedUsers = list(querySet)
         for matchedUser in matchedUsers: # type: MovieUser
-            ## TODO: 사용자별 영화 리스트 추출하여 중복제거 및 return
-            pass
+            for comment in matchedUser.comments.all():
+                movies_set.add(comment.movie)
+
+        return movies_set
 
 
 
@@ -53,4 +59,8 @@ class MovieRecommendation:
         :param movie:
         :return:
         """
+        pass
+
+
+    def process_item_based_relation_value(self, src: Movie, dest: Movie) -> Decimal:
         pass

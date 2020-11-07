@@ -71,7 +71,12 @@ class NaverMovieParser:
         ret.actors = []
 
         for actor in html.xpath("//div[@class='info_spec2']/dl[@class='step2']/dd/a"):
-            name = actor.text_content().strip()
+            _name = actor.text_content().strip()
+
+            ## 이름(역할) 또는 이름으로 주어지므로, 역할 정보는 지워야 충돌이 발생하지 않습니다.
+            _name_parse = parse('{}({})', _name)
+            name = _name if _name_parse is None else _name_parse.fixed[0]
+
             actor_id = int(parse("/movie/bi/pi/basic.nhn?code={}", actor.attrib['href']).fixed[0])
             ret.actors.append((actor_id, name))
 
