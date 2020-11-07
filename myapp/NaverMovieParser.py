@@ -45,7 +45,11 @@ class NaverMovieParser:
         html = self.init_lxml(raw)
         ret = RMovie()
 
-        ret.name = html.xpath("//h3[@class='h_movie']/a")[0].text_content()
+        _name_elem = html.xpath("//h3[@class='h_movie']/a")
+        ret.name = None if not len(_name_elem) else _name_elem[0].text_content()
+
+        if ret.name is None:
+            return None
 
         _description_elem = html.xpath("//p[@class='con_tx']")
         ret.description = None if not len(_description_elem) else _description_elem[0].text_content()

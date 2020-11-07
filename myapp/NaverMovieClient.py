@@ -29,6 +29,8 @@ class NaverMovieClient:
             return None
 
         robj = self.parser.parse_movie_info(raw) # type: RMovie
+        if robj is None:
+            return None
 
         ## 포스터 주소는 별도의 요청이 필요함.
         poster_url = self.parser.parse_movie_poster_url(
@@ -180,6 +182,9 @@ class NaverMovieClient:
                 continue
 
             movie = self.collect_movie_info(movie_id)
+            if movie is None:
+                continue
+
 
             obj.result = 0 if movie is None else 1
             obj.save()
@@ -211,6 +216,9 @@ class NaverMovieClient:
                 continue
 
             movie = self.collect_movie_info(movie_id) # type: Movie
+            if movie is None:
+                continue
+
             print("movie : %s" % movie.id)
 
             if process_recommends:
@@ -241,6 +249,9 @@ class NaverMovieClient:
                     continue
 
                 movie = self.collect_movie_info(movie_id) # type: Movie
+                if movie is None:
+                    continue
+
                 print("movie : %s" % movie.id)
 
                 if process_recommends:
