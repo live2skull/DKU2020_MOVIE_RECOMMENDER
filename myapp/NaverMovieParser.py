@@ -46,8 +46,10 @@ class NaverMovieParser:
         ret = RMovie()
 
         ret.name = html.xpath("//h3[@class='h_movie']/a")[0].text_content()
-        ret.thumb_url = html.xpath("//div[@class='poster']/a/img")[0].attrib["src"]
         ret.description = html.xpath("//p[@class='con_tx']")[0].xpath('string()')
+
+        _thumb_url_elem = html.xpath("//div[@class='poster']/a/img")
+        ret.thumb_url = None if not len(_thumb_url_elem) else _thumb_url_elem[0].attrib["src"]
 
         parsed_open_date = 0
 
@@ -100,7 +102,9 @@ class NaverMovieParser:
         """
 
         html = self.init_lxml(raw)
-        return html.xpath("//img[@id='targetImage']")[0].attrib["src"]
+
+        _img_url_elem = html.xpath("//img[@id='targetImage']")
+        return None if not len(_img_url_elem) else _img_url_elem[0].attrib["src"]
 
 
     def parse_recommends_from_movie_page(self, raw: str) -> Generator:
