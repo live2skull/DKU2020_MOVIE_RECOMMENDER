@@ -46,7 +46,9 @@ class NaverMovieParser:
         ret = RMovie()
 
         ret.name = html.xpath("//h3[@class='h_movie']/a")[0].text_content()
-        ret.description = html.xpath("//p[@class='con_tx']")[0].xpath('string()')
+
+        _description_elem = html.xpath("//p[@class='con_tx']")
+        ret.description = None if not len(_description_elem) else _description_elem[0].text_content()
 
         _thumb_url_elem = html.xpath("//div[@class='poster']/a/img")
         ret.thumb_url = None if not len(_thumb_url_elem) else _thumb_url_elem[0].attrib["src"]
