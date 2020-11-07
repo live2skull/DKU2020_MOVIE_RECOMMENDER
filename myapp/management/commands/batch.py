@@ -1,5 +1,12 @@
 from django.core.management.base import BaseCommand, CommandParser
+from django.core.management.base import CommandError
+
 from myapp.NaverMovieClient import NaverMovieClient
+from myapp.models import MovieUser
+
+from typing import Generator
+
+
 
 # NaverMovieClientBatchCommand
 class Command(BaseCommand):
@@ -8,8 +15,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser: CommandParser):
         parser.add_argument(
-            '--task', type=str, required=True, choices=('movie_current_showing', ),
-            help='실행할 작업을 지정합니다.' 
+            '--task', type=str, required=True, choices=('movie_current_showing', 'recommend_info'),
+            help='실행할 작업을 지정합니다.'
         )
         parser.add_argument(
             '--process-recommends', type=bool, required=False, default=True,
@@ -19,13 +26,21 @@ class Command(BaseCommand):
         parser.add_argument(
             '--ignore-hitted-movie', type=bool, required=False, default=False,
             help='영화 정보를 수집할 경우, 이미 수집된 영화의 경우 업데이트를 무시할지에 대한 여부입니다. 기본값은 False 입니다.'
+        )
+
+        parser.add_argument(
+            '--recommend-count', type=int, required=False, default=-1,
+            help='recommend_info 추천 정보 처리 과정에서 처리할 작업 갯수입니다. 제한을 두지 않으려면 -1 입니다. 기본값은 -1 입니다.'
 
         )
+
 
     def handle(self, *args, **options):
         task = options['task']
         process_recommends = options['process_recommends']
         ignore_hitted_movie = options['ignore_hitted_movie']
+
+        recommend_count = options['recommend_count']
 
         client = NaverMovieClient()
 
@@ -33,6 +48,16 @@ class Command(BaseCommand):
             client.process_movie_current_showing(
                 process_recommends=process_recommends, ignore_hitted_movie=ignore_hitted_movie
             )
+        elif task == 'recommend_info':
+            generator = client.process_recommend_info(count=recommend_count) # type: Generator[MovieUser, int, None]
+            for movieUser in generator: # type: MovieUser
+                print('사용자 처리 : id=%s' % movieUser)
+
+
+        else:
+            raise CommandError("일치하는 명렁어가 없습니다. 'manage.py task --help' 로 명령을 확인하세요.")
+
+
 
 
 
