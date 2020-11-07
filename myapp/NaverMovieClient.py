@@ -137,6 +137,28 @@ class NaverMovieClient:
             yield from []
 
 
+    def collect_movie_id_from_recommends(self, movie_user_id: int) -> Generator[int, int, None]:
+        """
+
+        :param movie_user_id: 대상 사용자 id입니다.
+        :return: 영화 id 값을 반환합니다.
+        """
+
+        count = 0
+
+        movieUser = MovieUser.objects.get(id=movie_user_id) # type: MovieUser
+
+        for raw in self.requester.request_user_recommends_until_end(comment_id=movieUser.track_comment.id, start_page=1):
+            for robj in self.parser.parse_recommends_from_user_page(raw=raw): # type: RMovieUserComment
+
+                    count += 1
+                    yield robj.movie_id
+
+        if count == 0:
+            yield from []
+
+
+    ### 사용하지 않음
     def process_movie_info(self, start_movie_id:int, end_movie_id: int,
                            process_recommends:bool=True, ignore_hitted_movie:bool=True) :
         """
@@ -169,12 +191,18 @@ class NaverMovieClient:
                 pass
 
 
-    def process_movie_current_showing(self, process_recommends:bool=True, ignore_hitted_movie:bool=True):
+
+    def process_movie_current_showing(self, process_recommends:bool=True, ignore_hitted_movie:bool=True) -> Generator[Movie, int, None]:
         """
         현재 상영영화에 대해 파싱을 진행합니다.
-        """
 
+        :param process_recommends: 추천 / 평점 정보 수집 여부입니다. 기본값은 True 입니다.
+        :param ignore_hitted_movie: 이미 수집된 영화에 대해 작업 여부를 결정합니다. 기본값은 True 입니다.
+        :return:
+        """
         ## TODO: logging!!
+
+        count = 0
 
         for movie_id in self.parser.parse_showing_movie_list(
                 self.requester.request_showing_movie_list()
@@ -183,12 +211,50 @@ class NaverMovieClient:
                 continue
 
             movie = self.collect_movie_info(movie_id) # type: Movie
-
             print("movie : %s" % movie.id)
 
             if process_recommends:
                 for recommend in self.collect_recommends_from_movie_page(movie_id):
                     print("recommend : %s" % recommend.id)
+
+            yield movie
+            count += 1
+
+        if count == 0:
+            yield from []
+
+
+    def process_movie_from_recommends(self, count: bool, process_recommends:bool=True) -> Generator[Movie, int, None]:
+        """
+        현재 저장된 영화사용자에 대해 다른 영화가 파싱되어있는지 확인하고, 없다면 진행합니다.
+
+        :param count: 반복할 횟수를 지정합니다. -1 을 지정할 경우, 더이상 일치하는 데이터가 없을 때 까지 계속합니다.
+        :param process_recommends: 추천 / 평점 정보 수집 여부입니다. 기본값은 True 입니다.
+        :return:
+        """
+        _count = 0
+
+        for movieUser in MovieUser.objects.all():
+            for movie_id in self.collect_movie_id_from_recommends(movieUser.id):
+
+                if Movie.objects.filter(id=movie_id).exists():
+                    continue
+
+                movie = self.collect_movie_info(movie_id) # type: Movie
+                print("movie : %s" % movie.id)
+
+                if process_recommends:
+                    for recommend in self.collect_recommends_from_movie_page(movie_id):
+                        print("recommend : %s" % recommend.id)
+
+                yield movie
+
+                _count += 1
+                if count != -1 and _count >= count:
+                    return
+
+        if _count == 0:
+            yield from []
 
 
     def process_recommend_info(self, count) -> Generator[MovieUser, int, None]:

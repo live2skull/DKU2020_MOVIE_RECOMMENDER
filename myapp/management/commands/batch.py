@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand, CommandParser
 from django.core.management.base import CommandError
 
 from myapp.NaverMovieClient import NaverMovieClient
-from myapp.models import MovieUser
+from myapp.models import MovieUser, Movie
 
 from typing import Generator
 
@@ -15,7 +15,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser: CommandParser):
         parser.add_argument(
-            '--task', type=str, required=True, choices=('movie_current_showing', 'recommend_info'),
+            '--task', type=str, required=True,
+            choices=('movie_current_showing', 'movie_from_recommends', 'recommend_info',),
             help='실행할 작업을 지정합니다.'
         )
         parser.add_argument(
@@ -45,32 +46,24 @@ class Command(BaseCommand):
         client = NaverMovieClient()
 
         if task == 'movie_current_showing':
-            client.process_movie_current_showing(
+            generator = client.process_movie_current_showing(
                 process_recommends=process_recommends, ignore_hitted_movie=ignore_hitted_movie
-            )
+            ) # type: Generator[Movie, int, None]
+            for movie in generator:
+                print('영화 처리 : id=%s' % movie.id)
+
         elif task == 'recommend_info':
             generator = client.process_recommend_info(count=recommend_count) # type: Generator[MovieUser, int, None]
             for movieUser in generator: # type: MovieUser
-                print('사용자 처리 : id=%s' % movieUser)
+                print('사용자 처리 : id=%s' % movieUser.id)
 
+        elif task == 'movie_from_recommends':
+            generator = client.process_movie_from_recommends(count=recommend_count) # type: Generator[Movie, int, None]
+            for movie in generator:
+                print('영화 처리 : id=%s' % movie.id)
 
         else:
             raise CommandError("일치하는 명렁어가 없습니다. 'manage.py task --help' 로 명령을 확인하세요.")
-
-
-
-
-
-
-class NaverMovieClientManualCommand(BaseCommand):
-
-    help = "영화 및 추천 정보 수집을 수동으로 지정합니다."
-
-    def add_arguments(self, parser):
-        pass
-
-    def handle(self, *args, **options):
-        pass
 
 
 ## 기존에 몰랐던 내용
