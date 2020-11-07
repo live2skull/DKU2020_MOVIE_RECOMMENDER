@@ -15,6 +15,26 @@ class NaverMovieParser:
         return lxml.html.document_fromstring(ret)
 
 
+    def parse_showing_movie_list(self, raw: str) -> Generator[int, int, None]:
+        """
+        현재 상영중인 영화 정보를 파싱합니다.
+        """
+
+        html = self.init_lxml(raw)
+
+        count = 0
+
+        for elem in html.xpath("//ul[@class='lst_detail_t1']/li"): 
+
+            url = elem.xpath(".//div[@class='thumb']/a")[0].attrib['href']
+            yield int(parse("/movie/bi/mi/basic.nhn?code={}", url).fixed[0])
+
+            count += 1
+            
+        if count == 0:
+            yield from []
+    
+
     def parse_movie_info(self, raw: str) -> RMovie:
         '''
         영화 기본 정보를 파싱합니다.
@@ -103,9 +123,13 @@ class NaverMovieParser:
                 recommend.body = temp_body
 
             ## id 정보 파싱
-            report = _recommend.xpath(".//div[@class='score_reple']/dl/dd/a")[0].attrib['onclick']
-            report = report[:-len("', 'point_after', false);return false;")]
-            recommend.id = int(report[report.rindex("'") + 1:])
+            ## 수정됨
+            pointlist = _recommend.xpath(".//div[@class='score_reple']/dl/dt/em/a")[0].attrib['onclick'] # type: str
+            recommend.id = int(parse("javascript:showPointListByNid({},{}", pointlist).fixed[0])
+
+            # report = _recommend.xpath(".//div[@class='score_reple']/dl/dd/a")[0].attrib['onclick']
+            # report = report[:-len("', 'point_after', false);return false;")]
+            # recommend.id = int(report[report.rindex("'") + 1:])
 
             count += 1
             yield recommend
@@ -132,7 +156,9 @@ class NaverMovieParser:
 
             # 사용자 페이지에서 가져오는 것이므로, 영화 고유번호가 필요함
             movie_link = _recommend.xpath("./td[@class='title']/a")[0].attrib['href']
-            recommend.movie_id = int(parse("?st=mcode&sword={}&target=after", movie_link).fixed[0])
+            ## target - before / after 두 경우 모두 존재함 - 뒤 데이터까지 입력해야 파서에서 사용할 수 있습니다.
+            # ex) '?st=mcode&sword=151196&target=before'
+            recommend.movie_id = int(parse("?st=mcode&sword={}&target={}", movie_link).fixed[0])
 
             count += 1
             yield recommend

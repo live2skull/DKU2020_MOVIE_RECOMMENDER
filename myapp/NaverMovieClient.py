@@ -1,10 +1,10 @@
 import warnings
-from typing import Generator
+from typing import Generator, List
 from .NaverMovieParser import NaverMovieParser
 from .NaverMovieRequester import NaverMovieRequester
 
 from .raw_models import RMovie, RMovieUserComment
-from .models import Movie, Genre, Actor, MovieUserComment, MovieParseHistory
+from .models import Movie, Genre, Actor, MovieUserComment, MovieParseHistory, MovieUser
 
 
 class NaverMovieClient:
@@ -46,6 +46,8 @@ class NaverMovieClient:
 
         actors = []
         ## 배우 생성
+        ## TODO: 배우 생성 시 () 이전 데이터를 입력하여야 함. - 배우이름 / 역할로 지정되지 때문임!
+        ## 괄호 있는경우 없는경우 구분해서 삽입합니다.
         for actor in robj.actors:
             _id, _name = actor
             actors.append(
@@ -76,7 +78,7 @@ class NaverMovieClient:
         return obj
 
 
-    def collect_recommends_from_movie_page(self, movie_id: int) -> Generator:
+    def collect_recommends_from_movie_page(self, movie_id: int) -> Generator[MovieUserComment, int, None]:
         """
         각 영화 페이지에서 평점 정보를 수집합니다.
         :param movie_id:
@@ -94,13 +96,9 @@ class NaverMovieClient:
             for robj in self.parser.parse_recommends_from_movie_page(raw=raw): # type: RMovieUserComment
         
                 ## 영화를 먼저 파싱한 상태라고 가정합니다.
-                obj, created = MovieUserComment.objects.update_or_create(
-                    id=robj.id, movie=movie,
-                    defaults={
-                        "score" : robj.score,
-                        "body" : robj.body,
-                        "is_spoiler" : robj.is_spoiler
-                    }
+                ## TODO: Model.objects?
+                obj, created = MovieUserComment.save_from_rmodel(
+                    movie_id=movie_id, robj=robj
                 )
                 count += 1
                 yield obj
@@ -109,36 +107,38 @@ class NaverMovieClient:
             yield from []
 
 
-    ## unused
-    def collect_recommends_from_user_page(self, user_id: int) -> Generator:
+    def collect_recommends_from_user_page(self, comment_id: int) -> Generator[MovieUserComment, int, None]:
         """
         사용자 페이지에서 평점 정보를 수집합니다.
-        :param user_id:
+        :param comment_id:
         :return:
         """
-        warnings.warn("user_id로 데이터 추출 불가. (이전 코멘트 id에 대한 연속적인 정보만 확인 가능)")
+
         count = 0
 
-        for raw in self.requester.request_user_recommends_until_end(user_id=user_id, start_page=1):
+        for raw in self.requester.request_user_recommends_until_end(comment_id=comment_id, start_page=1):
             for robj in self.parser.parse_recommends_from_user_page(raw=raw): # type: RMovieUserComment
 
-                ## TODO: 영화가 등록되어 있지 않은 경우 오류 발생. 따라서, 영화 정보를 먼저 파싱하여야 함.
-                obj, created = MovieUserComment.objects.update_or_create(
-                    id=robj.id, movie_id=robj.movie_id, # movie_user_id=user_id, -- 사용자 구분 불가능
-                    defaults={
-                        "score" : robj.score,
-                        "body" : robj.body
-                    }
-                )
-                count += 1
-                yield obj
+                ## 아직 영화 정보가 없다면 저장할 수 없습니다.
+                ## 아직 저장되지 않았다면 계속할 수 없습니다.
+                if Movie.objects.filter(id=robj.movie_id).exists() and \
+                        MovieUserComment.objects.filter(id=robj.id).exists():
+
+                    ## 여기서 저장하지 않습니다!!
+                    ## 불러와진 정보를 저장합니다.
+                    # obj, created = MovieUserComment.save_from_rmodel(
+                    #     movie_id=robj.movie_id, robj=robj
+                    # )
+
+                    count += 1
+                    yield MovieUserComment.objects.get(id=robj.id)
 
         if count == 0:
             yield from []
 
 
     def process_movie_info(self, start_movie_id:int, end_movie_id: int,
-                           process_recommends:bool=True, ignore_hitted_movie:bool=True):
+                           process_recommends:bool=True, ignore_hitted_movie:bool=True) :
         """
 
         :param start_movie_id:
@@ -161,7 +161,102 @@ class NaverMovieClient:
 
             obj.result = 0 if movie is None else 1
             obj.save()
-            
+
+            ## TODO: 작성 완료
+
             ## 여기서 바로 평점정보 확인
             if movie is not None and process_recommends:
                 pass
+
+
+    def process_movie_current_showing(self, process_recommends:bool=True, ignore_hitted_movie:bool=True):
+        """
+        현재 상영영화에 대해 파싱을 진행합니다.
+        """
+
+        ## TODO: logging!!
+
+        for movie_id in self.parser.parse_showing_movie_list(
+                self.requester.request_showing_movie_list()
+        ):
+            if ignore_hitted_movie and Movie.objects.filter(id=movie_id).exists():
+                continue
+
+            movie = self.collect_movie_info(movie_id) # type: Movie
+
+            print("movie : %s" % movie.id)
+
+            if process_recommends:
+                for recommend in self.collect_recommends_from_movie_page(movie_id):
+                    print("recommend : %s" % recommend.id)
+
+
+    def process_recommend_info(self, count) -> Generator[MovieUser, int, None]:
+        """
+        :param count: 반복할 횟수를 지정합니다. -1 을 지정할 경우, 더이상 일치하는 데이터가 없을 때 까지 계속합니다.
+
+        :return: 각 코멘트에 대해 지정된 MovieUser 제네레이터입니다.
+        """
+
+        _count = 0
+
+        while MovieUserComment.objects.filter(user_id__isnull=True).exists():
+            comments = MovieUserComment.objects.filter(user_id__isnull=True)
+
+            for comment in comments: # type: MovieUserComment
+                ## 아직 user가 지정되지 않은 코멘트입니다.
+
+                # 1. 해당 코멘트에 해당하는 모든 코멘트를 불러옵니다.
+                
+                # 이 때, collect_recommends_from_user_page 함수를 통해
+                # 저장되지 않았던 영화 정보는 사전에 이미 저장됩니다.
+                _comments = list(self.collect_recommends_from_user_page(comment_id=comment.id)) # type: List[MovieUserComment]
+
+                # 이미 저장되어 있는 user 정보 추출
+                master_user_id = 0
+
+                # 이미 user 정보가 지정되어 있는지 확인합니다.
+                for _comment in _comments: # type: MovieUserComment
+                    if _comment.user is not None:
+                        master_user_id += _comment.user_id
+                        break
+
+                # 이미 저장되어 있는 user 정보가 있는 경우
+                if master_user_id != 0:
+                    # 현재 진행중인 코멘트에 대해 사용자 저장
+                    comment.user_id = master_user_id
+                    comment.save()
+
+                    # 불러와진 사용자가 지정되지 않은 다른 코멘트에 대해 저장
+                    for _comment in _comments: # type: MovieUserComment
+                        if _comment.user is None:
+                            _comment.user_id = master_user_id
+                            _comment.save()
+
+                    # 지정된 MovieUser
+                    yield MovieUser.objects.get(id=master_user_id)
+
+
+                # 그렇지 않은 경우
+                # 새로운 MovieUser를 생성하고, 모든 코멘트에 대해 저장합니다.
+                else:
+                    movieUser = MovieUser.objects.create()
+                    # 현재 진행중인 코멘트에 대해 사용자 저장
+                    comment.user = movieUser
+                    comment.save()
+
+                    # 불러와진 다른 코멘트에 대해 저장
+                    for _comment in _comments:
+                        _comment.user = movieUser
+                        _comment.save()
+
+                    yield movieUser
+
+
+            _count += 1
+            if count != -1 and _count >= count:
+                break
+
+
+        if _count == 0:
+            yield from []
