@@ -199,4 +199,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
+## TODO: 서비스를 다른 곳으로 다시 옮기게 되는 경우 환경볂수와 함께 수정 예정
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]

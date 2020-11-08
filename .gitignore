@@ -5,6 +5,10 @@
 
 *.log
 
+
+# ignore static files
+static
+
 __pycache__
 *.pyc
 .env
