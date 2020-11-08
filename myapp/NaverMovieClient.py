@@ -26,6 +26,8 @@ class NaverMovieClient:
         :return:
         '''
 
+        ## TODO: 동시 실행 시 row lock 등 구현 필요
+
         raw = self.requester.request_movie_info(movie_id) # type: str
         if raw.find("영화 코드값 오류입니다.") != -1:
             return None
@@ -58,6 +60,8 @@ class NaverMovieClient:
                 Actor.objects.get_or_create(id=_id, defaults={'name' : _name})[0]
             )
 
+
+
         obj, created = Movie.objects.update_or_create(id=movie_id, defaults={
             'name' : robj.name,
             'opened_at' : robj.opened_at,
@@ -70,15 +74,21 @@ class NaverMovieClient:
         ## ManyToMany 필드 처리
         ### 리스트 하나씩 확인하여야 하며, 추가된 것 / 제거된 것에 대한 필터링이 필요함.
         ### 현재는 해당 데이터가 변경될 가능성은 없으므로, 새로 생성됬을 때 추가함.
-        for genre in genres:
-            if genre not in obj.genres.all():
-                obj.genres.add(genre)
 
-        for actor in actors:
-            if actor not in obj.actors.all():
-                obj.actors.add(actor)
+        ## TODO: 잠정 오류 - not in 키워드가 예상과는 다르게 동작하는 것으로 보임. 확인 요망.
+        ## 또한 manytomany 포함된 데이터가 많을 경우 SQL 로 처리하여야 함.
 
-        obj.save()
+        if created:
+            for genre in genres:
+                if genre not in obj.genres.all():
+                    obj.genres.add(genre)
+
+            for actor in actors:
+                if actor not in obj.actors.all():
+                    obj.actors.add(actor)
+
+        ## ManyToMany 필드는 add() 메서드 호출시 자동 저장됨.
+        # obj.save()
         return obj
 
 

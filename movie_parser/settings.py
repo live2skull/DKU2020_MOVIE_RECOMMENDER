@@ -202,4 +202,3 @@ USE_TZ = True
 ## TODO: 서비스를 다른 곳으로 다시 옮기게 되는 경우 환경볂수와 함께 수정 예정
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR + '/' + "static"
-print(BASE_DIR + '/' +  "static")
