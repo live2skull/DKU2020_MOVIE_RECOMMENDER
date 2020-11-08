@@ -59,7 +59,7 @@ if getenv('PRODUCTION') is not None:
 
 
 DEBUG = not bool(_production)
-ALLOWED_HOSTS = [] if DEBUG else [getenv("SERVICE_HOST"), "127.0.0.1"]
+ALLOWED_HOSTS = [getenv("SERVICE_HOST"), "127.0.0.1"]
 
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -201,6 +201,5 @@ USE_TZ = True
 
 ## TODO: 서비스를 다른 곳으로 다시 옮기게 되는 경우 환경볂수와 함께 수정 예정
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
+STATIC_ROOT = BASE_DIR + '/' + "static"
+print(BASE_DIR + '/' +  "static")
