@@ -59,7 +59,7 @@ if getenv('PRODUCTION') is not None:
 
 
 DEBUG = not bool(_production)
-ALLOWED_HOSTS = [] if not DEBUG else [getenv("SERVICE_HOST"), "127.0.0.1"]
+ALLOWED_HOSTS = [] if DEBUG else [getenv("SERVICE_HOST"), "127.0.0.1"]
 
 
 CORS_ORIGIN_ALLOW_ALL = True
