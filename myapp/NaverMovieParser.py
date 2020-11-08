@@ -57,30 +57,45 @@ class NaverMovieParser:
         if ret.name is None:
             return None
 
-        _description_elem = html.xpath("//p[@class='con_tx']")
-        ret.description = None if not len(_description_elem) else _description_elem[0].text_content()
+        try:
 
-        _thumb_url_elem = html.xpath("//div[@class='poster']/a/img")
-        ret.thumb_url = None if not len(_thumb_url_elem) else _thumb_url_elem[0].attrib["src"]
+            _description_elem = html.xpath("//p[@class='con_tx']")
+            ret.description = None if not len(_description_elem) else _description_elem[0].text_content()
 
-        parsed_open_date = 0
+            _thumb_url_elem = html.xpath("//div[@class='poster']/a/img")
+            ret.thumb_url = None if not len(_thumb_url_elem) else _thumb_url_elem[0].attrib["src"]
 
-        for i in range(1, 6):
-            _open_year = html.xpath("//p[@class='info_spec']/span[%s]/a[1]" % i)
-            if not len(_open_year): continue
+            parsed_open_date = 0
+
+            for i in range(1, 6):
+                _open_year = html.xpath("//p[@class='info_spec']/span[%s]/a[1]" % i)
+                if not len(_open_year): continue
 
 
-            if not _open_year[0].text_content().isdigit(): continue
-            open_year = int(_open_year[0].text_content())
+                if not _open_year[0].text_content().isdigit(): continue
+                open_year = int(_open_year[0].text_content())
 
-            _, open_month, open_day = html.xpath("//p[@class='info_spec']/span[%s]/a[2]" % i)[0].text_content().split('.')
-            ret.opened_at = date(year=open_year, month=int(open_month), day=int(open_day))
-            parsed_open_date += 1
-            break
+                datas = html.xpath("//p[@class='info_spec']/span[%s]/a[2]" % i)[0].text_content()
+                if not len(datas):
+                    ret.opened_at = date(year=open_year, month=1, day=1)
 
-        if parsed_open_date == 0:
-            ret.opened_at = date.min
-            Warning("%s 영화의 개봉일자를 탐색하지 못했습니다." % ret.name)
+                else:
+                    _, open_month, open_day = datas.split('.')
+                    ret.opened_at = date(year=open_year, month=int(open_month), day=int(open_day))
+
+                parsed_open_date += 1
+                break
+
+            if parsed_open_date == 0:
+                ret.opened_at = date.min
+                Warning("%s 영화의 개봉일자를 탐색하지 못했습니다." % ret.name)
+
+
+
+        except Exception as e:
+            capture_exception(e)
+            logger.critical("%s 처리 중 오류 발생." % ret.name)
+
 
         ret.actors = []
 
