@@ -53,7 +53,7 @@ class NaverMovieClient:
         for actor in robj.actors:
             _id, _name = actor
             actors.append(
-                Actor.objects.get_or_create(id=_id, name=_name)[0]
+                Actor.objects.get_or_create(id=_id, defaults={'name' : _name})[0]
             )
 
         obj, created = Movie.objects.update_or_create(id=movie_id, defaults={
