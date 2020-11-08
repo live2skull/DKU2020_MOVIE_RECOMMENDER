@@ -11,13 +11,39 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import logging
 from os import getenv
 from dotenv import load_dotenv
+
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+logger = logging.getLogger(__name__)
+
+load_dotenv()
+
+_sentry_dsn = getenv("SENTRY_DSN")
+
+if _sentry_dsn is not None:
+    sentry_sdk.init(
+        dsn=_sentry_dsn,
+        integrations=[DjangoIntegration()],
+        traces_sample_rate=1.0,
+
+        # If you wish to associate users to errors (assuming you are using
+        # django.contrib.auth) you may enable sending PII data.
+        send_default_pii=True
+    )
+    logger.info("sentry_sdk 활성화됨.")
+else:
+    logger.warning("SENTRY_DSN 설정값이 지정되지 않았으므로 sentry_sdk 오류 로깅을 사용할 수 없습니다!")
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -27,9 +53,12 @@ SECRET_KEY = getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-_production = getenv('PRODUCTION')
-DEBUG = True if _production is not None and bool(_production) else False
+_production = 0
+if getenv('PRODUCTION') is not None:
+    _production += int(getenv('PRODUCTION'))
 
+
+DEBUG = not bool(_production)
 ALLOWED_HOSTS = [] if not DEBUG else [getenv("SERVICE_HOST"), "127.0.0.1"]
 
 
@@ -114,6 +143,43 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+PRINT_LOG_LEVEL = 'INFO' if getenv('PRINT_LOG_LEVEL') is None else getenv('PRINT_LOG_LEVEL')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'default': {
+            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt': "%Y-%m-%d %H:%M:%S"
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': PRINT_LOG_LEVEL,
+            'class': 'logging.StreamHandler',
+            'formatter': 'default'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'propagate': True,
+            'level': 'INFO',
+        },
+        'urllib.connectionpool' : {
+            'handlers': ['console'],
+            'propagate': True,
+            'level': 'CRITICAL',
+        },
+
+        'myapp' : {
+            'handlers': ['console'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/

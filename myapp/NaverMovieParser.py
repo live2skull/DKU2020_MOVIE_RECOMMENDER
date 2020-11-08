@@ -1,10 +1,16 @@
+from sentry_sdk import capture_exception
+
 from typing import Generator
 from datetime import date
 import lxml.html
 from lxml.html import HtmlElement
 from parse import parse
 
+import logging
+
 from .raw_models import RMovie, RMovieUserComment
+
+logger = logging.getLogger(__name__)
 
 class NaverMovieParser:
     '''
@@ -124,30 +130,40 @@ class NaverMovieParser:
         count = 0
 
         for _recommend in html.xpath("//div[@class='score_result']/ul/li"):
-            recommend = RMovieUserComment() # type: RMovieUserComment
-            recommend.score = int(_recommend.xpath("//div[@class='star_score']/em")[0].text_content())
-            # 스포일러 멘트는 별도의 설정이 필요함.
-            temp_body = str(_recommend.xpath(".//div[@class='score_reple']//span[@id != 'ico_viewer']")[0].text_content()).strip()
 
-            if temp_body.find('스포일러가 포함된 감상평입니다.') == 0:
-                recommend.is_spoiler = True
-                recommend.body = str(_recommend.xpath(
-                    ".//span[contains(@id, '_filtered_ment_')]")[0].text_content()).strip()
-            else:
-                recommend.is_spoiler = False
-                recommend.body = temp_body
+            recommend = RMovieUserComment()  # type: RMovieUserComment
 
-            ## id 정보 파싱
-            ## 수정됨
-            pointlist = _recommend.xpath(".//div[@class='score_reple']/dl/dt/em/a")[0].attrib['onclick'] # type: str
-            recommend.id = int(parse("javascript:showPointListByNid({},{}", pointlist).fixed[0])
+            try:
+                recommend.score = int(_recommend.xpath("//div[@class='star_score']/em")[0].text_content())
+                # 스포일러 멘트는 별도의 설정이 필요함.
+                temp_body = str(_recommend.xpath(".//div[@class='score_reple']//span[@id != 'ico_viewer']")[0].text_content()).strip()
 
-            # report = _recommend.xpath(".//div[@class='score_reple']/dl/dd/a")[0].attrib['onclick']
-            # report = report[:-len("', 'point_after', false);return false;")]
-            # recommend.id = int(report[report.rindex("'") + 1:])
+                if temp_body.find('스포일러가 포함된 감상평입니다.') == 0:
+                    recommend.is_spoiler = True
+                    recommend.body = str(_recommend.xpath(
+                        ".//span[contains(@id, '_filtered_ment_')]")[0].text_content()).strip()
+                else:
+                    recommend.is_spoiler = False
+                    recommend.body = temp_body
 
-            count += 1
-            yield recommend
+                ## id 정보 파싱
+                ## 수정됨
+                pointlist = _recommend.xpath(".//div[@class='score_reple']/dl/dt/em/a")[0].attrib['onclick'] # type: str
+                recommend.id = int(parse("javascript:showPointListByNid({},{}", pointlist).fixed[0])
+
+                # report = _recommend.xpath(".//div[@class='score_reple']/dl/dd/a")[0].attrib['onclick']
+                # report = report[:-len("', 'point_after', false);return false;")]
+                # recommend.id = int(report[report.rindex("'") + 1:])
+
+                count += 1
+                yield recommend
+
+            except Exception as e:
+                capture_exception(e)
+                logger.critical("%s 처리 중 오류 발생." % recommend.id)
+
+                continue
+
 
         if count == 0:
             yield from []

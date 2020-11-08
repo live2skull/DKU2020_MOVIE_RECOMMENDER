@@ -6,6 +6,8 @@ from .NaverMovieRequester import NaverMovieRequester
 from .raw_models import RMovie, RMovieUserComment
 from .models import Movie, Genre, Actor, MovieUserComment, MovieParseHistory, MovieUser
 
+import logging
+logger = logging.getLogger(__name__)
 
 class NaverMovieClient:
 
@@ -219,11 +221,12 @@ class NaverMovieClient:
             if movie is None:
                 continue
 
-            print("movie : %s" % movie.id)
+
+            logger.debug("movie : %s" % movie.id)
 
             if process_recommends:
                 for recommend in self.collect_recommends_from_movie_page(movie_id):
-                    print("recommend : %s" % recommend.id)
+                    logger.debug("recommend : %s" % recommend.id)
 
             yield movie
             count += 1
@@ -252,11 +255,11 @@ class NaverMovieClient:
                 if movie is None:
                     continue
 
-                print("movie : %s" % movie.id)
+                logger.debug("movie : %s" % movie.id)
 
                 if process_recommends:
                     for recommend in self.collect_recommends_from_movie_page(movie_id):
-                        print("recommend : %s" % recommend.id)
+                        logger.debug("recommend : %s" % recommend.id)
 
                 yield movie
 
@@ -283,6 +286,7 @@ class NaverMovieClient:
             for comment in comments: # type: MovieUserComment
                 ## 아직 user가 지정되지 않은 코멘트입니다.
 
+                logger.debug("comment : %s" % comment.id)
                 # 1. 해당 코멘트에 해당하는 모든 코멘트를 불러옵니다.
                 
                 # 이 때, collect_recommends_from_user_page 함수를 통해
