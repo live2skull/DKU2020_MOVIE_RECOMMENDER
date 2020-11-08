@@ -2,7 +2,7 @@ import React from 'react';
 import Main from './Main';
 import Login from './User/Login';
 import Signup from "./User/Signup";
-import Movieinfo from "./Movie/Movieinfo";
+import MovieInfo from "./Movie/MovieInfo";
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 
 class Routes extends React.Component {
@@ -10,7 +10,7 @@ class Routes extends React.Component {
         return (
             <Router>
                 <Switch>
-                    <Route exact path='/movieinfo' component={Movieinfo} />
+                    <Route exact path='/movieinfo' component={MovieInfo} />
                     <Route exact path='/signup' component={Signup} />
                     <Route exact path='/login' component={Login} />
                     <Route exact path='/' component={Main} />

@@ -6,7 +6,11 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
+    "axios": "^0.21.0",
+    "cors": "^2.8.5",
+    "http-proxy-middleware": "^1.0.6",
     "mysql": "^2.18.1",
+    "query-string": "^6.13.7",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
@@ -14,6 +18,8 @@
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^2.0.0"
   },
+  "_comment_": "proxy 부분이 cors에러 해결 부분",
+  "proxy": "http://api.movie.live2skull.kr:9090",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -34,5 +40,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "homepage": "./"
 }

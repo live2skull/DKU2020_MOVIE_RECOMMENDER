@@ -1,7 +1,7 @@
 import React from 'react';
 import Topbar1 from './Menu/Topbar1';
 import Topbar2 from './Menu/Topbar2';
-import Movielist from "./Movie/Movielist";
+import MovieList from "./Movie/MovieList";
 
 class Main extends React.Component {
     render() {
@@ -9,7 +9,7 @@ class Main extends React.Component {
             <div>
                 <Topbar1/>
                 <Topbar2/>
-                <Movielist/>
+                <MovieList/>
             </div>
         );
     }
