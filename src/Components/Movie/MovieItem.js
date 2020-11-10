@@ -9,7 +9,7 @@ class MovieItem extends React.Component {
 
     render() {
         return (
-            <Card relaxed centered style={{margin: "10px"}} size='medium'>
+            <Card relaxed centered style={{margin: "10px"}} size='small'>
                 <Image as={Link} to={'/movieinfo?movie_id='+ this.props.movie_id}
                        src={this.props.img_url} /*size='small'*/
                        wrapped ui={false}/>

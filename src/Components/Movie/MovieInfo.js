@@ -44,6 +44,11 @@ class MovieInfo extends React.Component {
                 <Loading />
             )
         }
+
+        if (movie.score_avg == null) {
+            movie.score_avg = 0
+        }
+
         return (
             <div>
                 <Topbar1/>
