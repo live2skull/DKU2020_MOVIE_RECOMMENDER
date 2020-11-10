@@ -40,6 +40,9 @@ class Movie(Model):
     img_url = CharField(null=True, max_length=256) # 복잡한 URL 고려
     description = TextField(null=True)
 
+    def __str__(self):
+        return "Movie: %s - %s" % (self.id, self.name)
+
 
 class MovieParseHistory(Model):
     id = IntegerField(primary_key=True, editable=False)
