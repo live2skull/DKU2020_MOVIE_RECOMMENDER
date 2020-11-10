@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.generics import ListAPIView
-from rest_framework.pagination import PageNumberPagination
+
 from django_filters import rest_framework as filters
 
 from rest_framework.permissions import IsAdminUser
@@ -14,15 +14,12 @@ from rest_framework.response import Response
 from ..models import MovieUserComment, Movie
 from ..serializers.movie import MovieModelSerializer, MovieUserCommentModelSerializer
 
+from . import StandardPagnation
+
 
 ## TODO: 최근 영화 정보 표기
 ## TODO: pagnation 사용 시 result 버킷이 추가됨. 위와 같은 효과를 낼 수 있는 다른 효율적인 방법이 없을지?
 
-
-class StandardPagnation(PageNumberPagination):
-    page_size = 10
-    max_page_size = 10
-    page_query_param = 'page'
 
 
 
@@ -34,7 +31,6 @@ class MovieModelView(ReadOnlyModelViewSet):
     ## 사용하지 않을 경우
     # def list(self, request, *args, **kwargs):
     #     raise  NotImplementedError()
-
 
 
 

@@ -102,9 +102,9 @@ class UserComment(Model):
     사용자 리뷰 / 평점 정보입니다.
     """
     id = BigAutoField(primary_key=True, auto_created=True, editable=False)
-    user_id = ForeignKey(User,
+    user = ForeignKey(User,
                          null=False, related_name='comments', on_delete=CASCADE)
-    movie_id = ForeignKey(Movie,
+    movie = ForeignKey(Movie,
                           null=False, related_name='comments_user', on_delete=CASCADE)
     score = IntegerField(null=False)
     body = TextField(null=True)
