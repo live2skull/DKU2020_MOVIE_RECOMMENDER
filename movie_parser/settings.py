@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     # 'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_filters',
 
     'myapp'
 ]
@@ -187,15 +188,30 @@ LOGGING = {
     }
 }
 
+REST_FRAMEWORK = {
+    # 'DEFAULT_FILTER_BACKENDS' : ('django_filters.rest_framework.DjangoFilterBackend',),
+    ## 추가가 필요할 경우 사용합니다.
+    # 'DEFAULT_AUTHENTICATION_CLASSES': (
+    # sessionauthentication 사용하지 않으나 기본적으로 유저 정보를 불러오고 있음.
+    #     'rest_framework.authentication.SessionAuthentication',
+    #     'rest_framework.authentication.TokenAuthentication'
+    # ),
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.IsAuthenticated'
+    # ]
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'ko-kr'
+# LANGUAGE_CODE = 'ko-kr'
+LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Seoul'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+# APPEND_SLASH = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/

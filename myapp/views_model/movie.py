@@ -3,6 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.generics import ListAPIView
+from rest_framework import filters
 
 from django_filters import rest_framework as filters
 
@@ -11,8 +12,9 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 
-from ..models import MovieUserComment, Movie
-from ..serializers.movie import MovieModelSerializer, MovieUserCommentModelSerializer
+from ..models import MovieUserComment, Movie, Genre
+from ..serializers.movie import MovieModelSerializer, MovieUserCommentModelSerializer, GenreModelSerializer
+from ..filtersets import MovieFilter
 
 from . import StandardPagnation
 
@@ -22,11 +24,23 @@ from . import StandardPagnation
 
 
 
+class GenreModelView(ReadOnlyModelViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreModelSerializer
+    pagination_class = StandardPagnation
+
+    ## 사용하지 않을 경우
+    # def list(self, request, *args, **kwargs):
+    #     raise  NotImplementedError()
+
+
 
 class MovieModelView(ReadOnlyModelViewSet):
     queryset = Movie.objects.all()
     serializer_class = MovieModelSerializer
     pagination_class = StandardPagnation
+    filter_backends = (filters.DjangoFilterBackend, )
+    filter_class = MovieFilter
 
     ## 사용하지 않을 경우
     # def list(self, request, *args, **kwargs):
@@ -51,8 +65,10 @@ class MovieUserCommentView(ListAPIView):
 
 
 
+
 mvRouter = DefaultRouter()
 mvRouter.register('movies', MovieModelView)
+mvRouter.register('genres', GenreModelView)
 
 
 urlpatterns = [

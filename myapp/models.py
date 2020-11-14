@@ -1,6 +1,6 @@
 from datetime import date
 
-from typing import Tuple
+from typing import Tuple, List
 
 from django.db.models import Model, CASCADE
 from django.db.models import ForeignKey, OneToOneField
@@ -8,10 +8,15 @@ from django.db.models import \
     CharField, SmallIntegerField, IntegerField, BigAutoField, TextField, \
     BinaryField, DecimalField, DateTimeField, DateField, AutoField, ManyToManyField, BooleanField
 
+from django.db.models.aggregates import Avg
+
 from .raw_models import RMovieUserComment
 
-MAX_STR_LEN = 100
+from logging import getLogger
 
+logger = getLogger(__name__)
+
+MAX_STR_LEN = 100
 
 
 class Genre(Model):
@@ -39,6 +44,28 @@ class Movie(Model):
     thumb_url = CharField(null=True, max_length=256) # 복잡한 URL 고려
     img_url = CharField(null=True, max_length=256) # 복잡한 URL 고려
     description = TextField(null=True)
+
+    score = DecimalField(null=True, max_digits=4, decimal_places=2) # 소숫점 두자리수까지 허용합니다.
+
+    @classmethod
+    def update_scores(cls):
+        objs = cls.objects.filter(score__isnull=True) # type: List['Movie']
+        logger.debug('update_scores() : %s cnt' % len(objs))
+
+        for obj in objs:
+            obj.update_score()
+
+
+    def update_score(self):
+        result = MovieUserComment.objects.filter(movie_id=self.id) \
+            .annotate(score_avg=Avg("score")) \
+            .values('score_avg')
+
+        score = result[0]['score_avg'] if len(result) else None
+        logger.debug('update_score %s (%s) = %s' % (self.id, self.name, score))
+        self.score = score
+        self.save()
+
 
     def __str__(self):
         return "Movie: %s - %s" % (self.id, self.name)
