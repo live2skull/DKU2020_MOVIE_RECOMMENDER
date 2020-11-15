@@ -1,12 +1,11 @@
 import React from "react";
-import {Segment, Header, Image, Rating} from "semantic-ui-react";
+import {Segment, Header, Image, Rating, Sticky} from "semantic-ui-react";
 import Topbar1 from "../Menu/Topbar1";
 import Topbar2 from "../Menu/Topbar2";
 import UserComment from "./UserComment"
 import Loading from "../Decorator/Loading";
 import axios from "axios";
 import queryString from "query-string";
-
 
 class MovieInfo extends React.Component {
     constructor(props) {
@@ -41,19 +40,21 @@ class MovieInfo extends React.Component {
 
         if (this.state.movie == null) {
             return (
-                <Loading />
+                <Loading/>
             )
         }
 
-        if (movie.score_avg == null) {
-            movie.score_avg = 0
+        if (movie.score == null) {
+            movie.score = 0
         }
 
         return (
             <div>
-                <Topbar1/>
-                <Topbar2/>
-                <Segment.Group>
+                <Sticky>
+                    <Topbar1/>
+                    <Topbar2/>
+                </Sticky>
+                <Segment.Group rasied>
                     <Segment.Group horizontal>
                         <Image bordered rounded size='medium' src={movie.img_url}/>
                         <Segment.Group vertical>
@@ -63,10 +64,10 @@ class MovieInfo extends React.Component {
                                 </Header>
                             </Segment>
                             <Segment>
-                                <Header as='h3' style={{fontSize: '1.6em'}}>
-                                    평점 : {movie.score_avg.toFixed(2)} <Rating icon='star'
-                                                                              defaultRating={(movie.score_avg / 2).toFixed(2)}
-                                                                              maxRating={5} disabled/>
+                                <Header as='h3' style={{fontSize: '1.4em'}}>
+                                    평점 : {parseFloat(movie.score).toFixed(2)} <Rating icon='star'
+                                                                              defaultRating={(parseFloat(movie.score)).toFixed(2)}
+                                                                              maxRating={10} disabled/>
                                 </Header>
                             </Segment>
                             <Segment>장르 : {movie.genres.map(genre => genre.name).join(", ")} </Segment>
@@ -78,7 +79,7 @@ class MovieInfo extends React.Component {
                             </Segment>
                         </Segment.Group>
                     </Segment.Group>
-                    <UserComment/>
+                    <UserComment movie_id={movie.id}/>
                 </Segment.Group>
             </div>
         )

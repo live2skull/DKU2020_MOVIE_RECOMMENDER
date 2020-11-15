@@ -6,6 +6,7 @@ class Topbar1 extends React.Component {
     state = {}
 
     handleItemClick = (e, {name}) => this.setState({activeItem: name})
+
     render() {
         const {activeItem} = this.state
 
@@ -34,10 +35,10 @@ class Topbar1 extends React.Component {
 
 
                     <Menu.Item as={Link} to='/signup'
-                        size='large'
-                        name='signup'
-                        active={activeItem === 'signup'}
-                        onClick={this.handleItemClick}
+                               size='large'
+                               name='signup'
+                               active={activeItem === 'signup'}
+                               onClick={this.handleItemClick}
                     >
                         <h3>회원가입</h3>
                     </Menu.Item>

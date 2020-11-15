@@ -1,12 +1,13 @@
 import React from 'react';
 import {Card, Loader} from "semantic-ui-react";
-import axios from "axios";
+import axios from "axios"; // API 연동
 import MovieItem from "./MovieItem";
-import Loading from "../Decorator/Loading"; // API 연동
+import Loading from "../Decorator/Loading";
 
 class MovieList extends React.Component {
     constructor(props) {
         super(props);
+
         this.state = {
             movieList: [],
             page_id: 1,
@@ -24,7 +25,11 @@ class MovieList extends React.Component {
     }
 
     _getList() {
-        axios.get("/data/movies/?page=" + this.state.page_id)
+        axios.get("/data/movies/?page=" + this.state.page_id
+            + "&genre=" + this.props.genre_id
+            + "&title=" + this.props.title
+            + "&score_gte=" + this.props.score_gte
+            + "&score_lte=" /*+ this.props.score_gte*/)
             .then(data => {
                 const nextItems = data.data.results;
                 this.setState({
