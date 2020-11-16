@@ -21,7 +21,15 @@ class Topbar1 extends React.Component {
                         <h1>영화보러갈래</h1>
                     </Menu.Item>
                 </Link>
-
+                <Link to='/movielistpagebyfilter'>
+                    <Menu.Item
+                        name='filter'
+                        active={activeItem === 'filter'}
+                        onClick={this.handleItemClick}
+                    >
+                        <h1>상세검색페이지</h1>
+                    </Menu.Item>
+                </Link>
                 <Menu.Menu position='right'>
 
 
