@@ -18,6 +18,7 @@ from ..serializers.movie import MovieModelSerializer
 
 from . import StandardPagnation
 
+
 from ..MovieRecommendation import MovieRecommendation
 
 recommendation = MovieRecommendation()
@@ -27,16 +28,19 @@ recommendation = MovieRecommendation()
 
 class UserBasedRecommendView(APIView):
 
-    def get(self, request, format=None):
+    def get(self, request: Request, user_id: int, format=None):
         """
         Return a list of all users.
         """
-
-        user_id = int(request.query_params['user'])
         recommends = recommendation.get_recommendations_user_based(
             User.objects.get(id=user_id)
         ) # type: List[Movie]
 
-        return Response(recommends)
+        ## 리스트 형태의 데이터를 사용하므로, many 옵션이 설정되어야 합니다.
+        serializer = MovieModelSerializer(recommends, many=True)
 
+        return Response(serializer.data)
 
+urlpatterns = [
+    path('<int:user_id>', UserBasedRecommendView.as_view()),
+]

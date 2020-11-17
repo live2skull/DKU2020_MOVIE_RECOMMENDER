@@ -84,40 +84,6 @@ class MovieRecommendation:
 
 
 
-    def get_recommendations_user_based2(self, user: User, allowance=1, maximum=30) -> List[Movie]:
-
-        userComments = list(user.comments.all())  # type: List[UserComment]
-
-        # 사용자의 영화 평점이 존재하지 않는 경우, 진행할 수 없습니다.
-        if not len(userComments):
-            return list()
-
-        movies_dict = {} ## 데이터 저장 변수
-        ## 이렇게 해버리면 추천한 전체 영화에 대한 정보가 없어지는 것 같음.
-        ## 시간도 더욱이 오래 걸림
-
-        for userComment in userComments: # type: UserComment
-            ## 허용치 값을 지정합니다.
-            score_min = 0 if userComment.score - allowance < 0 else userComment.score - allowance
-            score_max = 10 if userComment.score + allowance > 10 else userComment.score + allowance
-            
-            users = MovieUser.objects.filter(comments__movie_id=userComment.movie_id,
-                comments__score__gte=score_min, comments__score__lte=score_max)
-            
-            for user in users: # type: MovieUser
-                datas = user.comments.all().order_by('-score').values_list('movie_id', 'score')[:10]
-
-                for movie_id, score in datas: # type: int
-                    if movie_id == userComment.movie_id: continue
-
-                    if movie_id not in movies_dict.keys():
-                        movies_dict.setdefault(movie_id, score)
-                    else:
-                        movies_dict[movie_id] += score
-
-        print(movies_dict)
-        
-
     def get_recommendations_item_based(self, movie: Movie) -> List[Movie]:
         raise NotImplementedError("아직 구현되지 않았습니다.")
 
