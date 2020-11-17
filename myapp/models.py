@@ -7,6 +7,7 @@ from django.db.models import ForeignKey, OneToOneField
 from django.db.models import \
     CharField, SmallIntegerField, IntegerField, BigAutoField, TextField, \
     BinaryField, DecimalField, DateTimeField, DateField, AutoField, ManyToManyField, BooleanField
+from django.db.models import Index
 
 from django.db.models.aggregates import Avg
 
@@ -113,6 +114,14 @@ class MovieUserComment(Model):
         })
 
         return obj, updated
+
+    class Meta:
+        ## 최적화를 위한 인덱싱 추가
+        indexes = [
+            Index(fields=['movie'])
+        ]
+        ## TODO: unique_together 또는 UniqueConstraint 옵션을 사용하여 여러 필드 쌍을 constraint 하게 묶을 수 있음.
+
 
 #### ---- 실 서비스 사용자 데이터 ----
 
