@@ -57,7 +57,7 @@ class MovieRecommendation:
         # 3. 해당 사용자들이 평가한 다른 영화 평점을 불러옵니다.
         # 점수 카운팅을 위한 임시변수
         movies_dict = {}
-        matchedUsers = set(querySet)
+        matchedUsers = set(querySet.order_by('-score_avg')[:200])
         logger.debug("querySet executed : users: %s" % len(matchedUsers))
 
         for matchedUser in matchedUsers:

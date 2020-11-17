@@ -86,7 +86,7 @@ class MovieUser(Model):
     """
     # 내부 고유 값
     id = BigAutoField(primary_key=True)
-    score_avg = IntegerField(null=True)
+    score_avg = DecimalField(null=True, max_digits=4, decimal_places=2)
 
     @property
     def track_comment(self) -> 'MovieUserComment':
