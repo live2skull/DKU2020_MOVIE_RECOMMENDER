@@ -118,7 +118,9 @@ class MovieUserComment(Model):
     class Meta:
         ## 최적화를 위한 인덱싱 추가
         indexes = [
-            Index(fields=['movie'])
+            Index(fields=['movie']),
+            Index(fields=['score']),
+            Index(fields=['movie', 'score'])
         ]
         ## TODO: unique_together 또는 UniqueConstraint 옵션을 사용하여 여러 필드 쌍을 constraint 하게 묶을 수 있음.
 
