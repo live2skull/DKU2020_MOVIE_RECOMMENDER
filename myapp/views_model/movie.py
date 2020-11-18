@@ -36,7 +36,7 @@ class GenreModelView(ReadOnlyModelViewSet):
 
 
 class MovieModelView(ReadOnlyModelViewSet):
-    queryset = Movie.objects.all()
+    queryset = Movie.objects.all().order_by('-score').order_by('-opened_at')
     serializer_class = MovieModelSerializer
     pagination_class = StandardPagnation
     filter_backends = (filters.DjangoFilterBackend, )

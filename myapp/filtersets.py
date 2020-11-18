@@ -19,8 +19,6 @@ from django.db.models import Avg
 
 class MovieFilter(filters.FilterSet):
 
-
-
     title = filters.CharFilter(field_name='name', lookup_expr='icontains')
     genre = filters.NumberFilter(field_name='genres__id', lookup_expr='exact')
 
