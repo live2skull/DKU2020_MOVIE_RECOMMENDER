@@ -2,6 +2,8 @@ from datetime import date
 
 from typing import Tuple, List
 
+
+from django.contrib.auth.models import User
 from django.db.models import Model, CASCADE
 from django.db.models import ForeignKey, OneToOneField
 from django.db.models import \
@@ -128,15 +130,16 @@ class MovieUserComment(Model):
 
 #### ---- 실 서비스 사용자 데이터 ----
 
-class User(Model):
-    """
-    사용자 정보입니다.
-    """
-
-    id = BigAutoField(primary_key=True, auto_created=True, editable=False)
-    email = CharField(unique=True, null=False, max_length=MAX_STR_LEN)
-    password = CharField(null=False, max_length=MAX_STR_LEN)
-    nickname = CharField(null=False, unique=True, max_length=MAX_STR_LEN)
+# class User(Model):
+#     """
+#     사용자 정보입니다.
+#     """
+#
+#     id = BigAutoField(primary_key=True, auto_created=True, editable=False)
+#     email = CharField(unique=True, null=False, max_length=MAX_STR_LEN)
+#     ### MD5로 저장될 것입니다. 실제 길이는 32바이트입니다!
+#     password = CharField(null=False, max_length=MAX_STR_LEN)
+#     nickname = CharField(null=False, unique=True, max_length=MAX_STR_LEN)
 
 
 class UserComment(Model):

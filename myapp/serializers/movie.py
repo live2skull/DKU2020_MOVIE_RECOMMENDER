@@ -39,7 +39,21 @@ class MovieModelSerializer(ModelSerializer):
         model = Movie
         fields = '__all__'
 
+
+## ForeignKey 필드를 별도로 serializer에 작성하지 않으면 해당 키의 primary 키가 key_id 가 아닌 key로 출력됩니다.
+
 class MovieUserCommentModelSerializer(ModelSerializer):
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)  # type: dict
+
+        ## 임의로 데이터 서식 변경 - movie => movie_id
+        ## movie 로 쓸 경우 object, movies 로 쓸 경우 list에 object 통일성 유지.
+        movie_id = data['movie'] # type: int
+        del data['movie']
+        data.setdefault('movie_id', movie_id)
+
+        return data
 
     class Meta:
         model = MovieUserComment

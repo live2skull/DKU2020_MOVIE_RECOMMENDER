@@ -8,5 +8,5 @@ from .views_model.users import urlpatterns as urlpatterns_user
 urlpatterns = [
     path('data/', include(urlpatterns_movie)),
     path('data/', include(urlpatterns_user)),
-    path('recommend/', include(urlpatterns_recommend)),
+    path('data/recommends/', include(urlpatterns_recommend)),
 ]

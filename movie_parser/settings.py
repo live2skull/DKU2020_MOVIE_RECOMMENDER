@@ -78,19 +78,18 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
-
     'myapp'
 ]
 
 MIDDLEWARE = [
+    'myapp.middleware.corsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'myapp.middleware.corsMiddleware'
     # 'corsheaders.middleware.CorsMiddleware'
 ]
 
@@ -113,7 +112,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'movie_parser.wsgi.application'
-
 
 
 DATABASES = {
@@ -191,11 +189,10 @@ LOGGING = {
 REST_FRAMEWORK = {
     # 'DEFAULT_FILTER_BACKENDS' : ('django_filters.rest_framework.DjangoFilterBackend',),
     ## 추가가 필요할 경우 사용합니다.
-    # 'DEFAULT_AUTHENTICATION_CLASSES': (
-    # sessionauthentication 사용하지 않으나 기본적으로 유저 정보를 불러오고 있음.
-    #     'rest_framework.authentication.SessionAuthentication',
-    #     'rest_framework.authentication.TokenAuthentication'
-    # ),
+    ## !! iterable 형태의 데이터여야 합니다!!
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
     # 'DEFAULT_PERMISSION_CLASSES': [
     #     'rest_framework.permissions.IsAuthenticated'
     # ]
@@ -211,7 +208,8 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-# APPEND_SLASH = False
+## 주의! redirection 되는 시점에서는 middleware가 없음.
+APPEND_SLASH = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
