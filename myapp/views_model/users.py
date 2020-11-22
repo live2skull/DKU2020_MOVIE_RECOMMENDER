@@ -20,7 +20,7 @@ from ..models import User, UserComment
 from ..serializers.user import UserModelSerializer, UserActionResSerializer,\
     UserLoginReqSerializer, UserJoinReqSerializer, \
     UserCommentDelReqSerializer, UserCommentEditReqSerializer, \
-    UserCommentModelSerializer
+    UserMyMovieCommentResSerializer
 
 import hashlib
 from binascii import hexlify
@@ -213,6 +213,9 @@ class UserMyMovieCommentView(APIView):
 
         queryset = UserComment.objects.filter(user=request.user, movie_id=movie_id) # type: QuerySet
         if not queryset.exists():
+
+            ### 별도 수정 - user_id 를 nickname으로 수정합니다.
+
             serializer = UserActionResSerializer(
                 data={'result' : False, 'error_message' : '해당 영화에 댓글을 작성하지 않았습니다.'}
             )
@@ -223,7 +226,8 @@ class UserMyMovieCommentView(APIView):
 
         else:
             comment = queryset.get() # type: UserComment
-            serializer = UserCommentModelSerializer(comment, many=False)
+            ### 수정 - user 대신 nickname이 나오도록 수정
+            serializer = UserMyMovieCommentResSerializer(comment, many=False)
             return Response(serializer.data)
 
 

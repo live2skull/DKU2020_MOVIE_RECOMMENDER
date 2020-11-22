@@ -7,14 +7,21 @@ from rest_framework.exceptions import ValidationError
 
 from ..models import User, UserComment
 
-class UserCommentModelSerializer(ModelSerializer):
 
-    def to_representation(self, instance):
+## TODO: ModelSerializer를 상속받으면, 해당 기능을 정확히 어떻게 상속하는지? (예: 필드 등)
+
+class UserMyMovieCommentResSerializer(ModelSerializer):
+
+    def to_representation(self, instance: UserComment):
         data = super().to_representation(instance) # type: dict
 
         movie_id = data['movie']  # type: int
         del data['movie']
         data.setdefault('movie_id', movie_id)
+
+        user_id = data['user']
+        del data['user']
+        data.setdefault('nickname', instance.user.username)
 
         return data
 
@@ -25,7 +32,7 @@ class UserCommentModelSerializer(ModelSerializer):
 
 class UserModelSerializer(ModelSerializer):
 
-    comments = UserCommentModelSerializer(many=True)
+    comments = UserMyMovieCommentResSerializer(many=True)
 
     def to_representation(self, instance):
         data = super().to_representation(instance)  # type: dict
@@ -88,6 +95,7 @@ class UserCommentEditReqSerializer(Serializer):
 class UserCommentDelReqSerializer(Serializer):
 
     movie_id = IntegerField(required=True)
+
 
 
 class UserActionResSerializer(Serializer):

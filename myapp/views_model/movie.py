@@ -2,6 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework import filters
 
@@ -12,8 +13,9 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 
-from ..models import MovieUserComment, Movie, Genre
+from ..models import MovieUserComment, Movie, Genre, UserComment
 from ..serializers.movie import MovieModelSerializer, MovieUserCommentModelSerializer, GenreModelSerializer
+from ..serializers.user import UserMyMovieCommentResSerializer
 from ..filtersets import MovieFilter
 
 from . import StandardPagnation
@@ -47,8 +49,22 @@ class MovieModelView(ReadOnlyModelViewSet):
     #     raise  NotImplementedError()
 
 
-
 class MovieUserCommentView(ListAPIView):
+
+    serializer_class = UserMyMovieCommentResSerializer
+    pagination_class = StandardPagnation
+
+    movie_id = None # type: int
+
+    def get_queryset(self):
+        return UserComment.objects.filter(movie_id=self.movie_id)
+
+    def get(self,  request, *args, **kwargs):
+        self.movie_id = kwargs['movie_id']
+        return super().get(self, request, *args, **kwargs)
+
+
+class MovieParsedUserCommentView(ListAPIView):
     # queryset -> 고유 id 값이 아닌, 영화 id 값을 넣었을 때 해당 값으로 검색해야함.
 
     serializer_class = MovieUserCommentModelSerializer
@@ -66,6 +82,7 @@ class MovieUserCommentView(ListAPIView):
 
 
 
+
 mvRouter = DefaultRouter()
 mvRouter.register('movies', MovieModelView)
 mvRouter.register('genres', GenreModelView)
@@ -73,7 +90,7 @@ mvRouter.register('genres', GenreModelView)
 
 urlpatterns = [
     path('', include(mvRouter.urls)),
-    path('comments/<pk>', MovieUserCommentView.as_view()),
-    path('comments/<pk>/', MovieUserCommentView.as_view())
+    path('comments/<pk>', MovieParsedUserCommentView.as_view()),
+    path('user_comments/<int:movie_id>', MovieUserCommentView.as_view()),
     ## ?? 끝 slash 사용불가능 / digit only
 ]
