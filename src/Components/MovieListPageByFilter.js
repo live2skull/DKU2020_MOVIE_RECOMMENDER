@@ -50,13 +50,13 @@ class MovieListPageByFilter extends React.Component {
 
     handleChangeGenre = (e, {value}) => {
         this.setState({
-            genre_id : value
+            genre_id: value
         })
     }
 
     handleScoreClick = (e, {name}) => {
         this.setState({
-            score_gte : name
+            score_gte: name
         })
     }
 
@@ -120,11 +120,10 @@ class MovieListPageByFilter extends React.Component {
         const items = [];
         const {value} = this.state
 
-        {
-            this.state.movieList.map(movie => {
-                items.push(<MovieItem movie_id={movie.id} name={movie.name} img_url={movie.img_url}/>);
-            })
-        }
+        // eslint-disable-next-line array-callback-return
+        this.state.movieList.map(movie => {
+            items.push(<MovieItem movie_id={movie.id} name={movie.name} img_url={movie.img_url}/>);
+        })
 
         if (this.state.movieList.length === 0) {
             return (

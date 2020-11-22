@@ -3,9 +3,6 @@ import {Link} from "react-router-dom";
 import {Image, Card} from "semantic-ui-react";
 
 class MovieItem extends React.Component {
-    constructor(props) {
-        super(props);
-    }
 
     render() {
         return (

@@ -61,11 +61,10 @@ class MovieList extends React.Component {
     render() {
         const items = [];
 
-        {
-            this.state.movieList.map(movie => {
-                items.push(<MovieItem movie_id={movie.id} name={movie.name} img_url={movie.img_url}/>);
-            })
-        }
+        // eslint-disable-next-line array-callback-return
+        this.state.movieList.map(movie => {
+            items.push(<MovieItem movie_id={movie.id} name={movie.name} img_url={movie.img_url}/>);
+        })
 
         if (this.state.movieList.length === 0) {
             return (
@@ -80,7 +79,7 @@ class MovieList extends React.Component {
                         {items}
                     </Card.Group>
                     <br/>
-                        <Loader active inline='centered'>로딩중</Loader>
+                    <Loader active inline='centered'>로딩중</Loader>
                 </div>
             )
 

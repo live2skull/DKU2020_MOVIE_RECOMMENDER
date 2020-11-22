@@ -1,49 +1,94 @@
 import React from "react";
-import {Form, Button, Segment, Message, Grid} from "semantic-ui-react";
+import {Form, Segment, Grid} from "semantic-ui-react";
 import Topbar1 from "../Menu/Topbar1";
+import axios from "axios";
 
 class Signup extends React.Component {
+    state = {
+        email: '',
+        password: '',
+        password_confirm: '',
+        nickname: '',
+    }
+
+    handleChange = (e, {name, value}) => this.setState({[name]: value})
+
+    handleSubmit = () => {
+        this._join()
+    }
+
+    _join() {
+        const JoinData = {
+            email: this.state.email,
+            password: this.state.password,
+            password_confirm: this.state.password_confirm,
+            nickname: this.state.nickname
+        }
+        return (
+            axios.post("/data/users/join", JoinData)
+                .then((response) => {
+                    if (response.data.result === false) {
+                        alert(response.data.error_message);
+                    }
+                    else {
+                        alert('가입 되었습니다 !');
+                        this.props.history.push('/login');
+                    }
+                }).catch(() => {
+                alert('가입에 실패하셨습니다 !');
+            })
+        )
+    }
+
     render() {
+        const {email, password, password_confirm, nickname} = this.state
+
         return (
             <div>
                 <Topbar1/>
                 <Grid textAlign='center' style={{height: '80vh'}} verticalAlign='middle'>
                     <Grid.Column style={{maxWidth: 450}}>
-                        <Form size='large'>
+                        <Form size='large' onSubmit={this.handleSubmit}>
                             <Segment stacked>
-                                <Form.Input
-                                    fluid icon='user'
-                                    iconPosition='left'
-                                    placeholder='아이디'
-                                    type='id'
-                                />
-                                <Form.Input
-                                    fluid icon='lock'
-                                    iconPosition='left'
-                                    placeholder='비밀번호'
-                                    type='password'
-                                />
-                                <Form.Input
-                                    fluid icon='checkmark'
-                                    iconPosition='left'
-                                    placeholder='비밀번호확인'
-                                    type='checkPassword'
-                                />
                                 <Form.Input
                                     fluid icon='mail'
                                     iconPosition='left'
                                     placeholder='이메일'
+                                    name='email'
                                     type='email'
+                                    value={email}
+                                    onChange={this.handleChange}
+                                />
+                                <Form.Input
+                                    fluid icon='lock'
+                                    iconPosition='left'
+                                    placeholder='비밀번호 8자리 이상'
+                                    name='password'
+                                    type='password'
+                                    value={password}
+                                    onChange={this.handleChange}
+                                />
+                                <Form.Input
+                                    fluid icon='checkmark'
+                                    iconPosition='left'
+                                    placeholder='비밀번호 확인'
+                                    name='password_confirm'
+                                    type='password'
+                                    value={password_confirm}
+                                    onChange={this.handleChange}
                                 />
                                 <Form.Input
                                     fluid icon='smile outline'
                                     iconPosition='left'
                                     placeholder='닉네임'
+                                    name='nickname'
                                     type='nickname'
+                                    value={nickname}
+                                    onChange={this.handleChange}
                                 />
-                                <Button color='teal' fluid size='large'>
+                                <Form.Button color='teal' fluid size='large'>
                                     가입
-                                </Button>
+                                </Form.Button>
                             </Segment>
                         </Form>
                     </Grid.Column>
