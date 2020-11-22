@@ -1,6 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from django.db.models import QuerySet
 from django.contrib.auth import authenticate
+from django.http.response import HttpResponseNotFound
 
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet, GenericViewSet, ViewSet
@@ -17,7 +19,8 @@ from sentry_sdk import capture_exception
 from ..models import User, UserComment
 from ..serializers.user import UserModelSerializer, UserActionResSerializer,\
     UserLoginReqSerializer, UserJoinReqSerializer, \
-    UserCommentDelReqSerializer, UserCommentEditReqSerializer
+    UserCommentDelReqSerializer, UserCommentEditReqSerializer, \
+    UserCommentModelSerializer
 
 import hashlib
 from binascii import hexlify
@@ -202,6 +205,29 @@ class UserCommentDeleteActionView(APIView):
         return Response(res_serializer.data)
 
 
+class UserMyMovieCommentView(APIView):
+
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request: Request, movie_id: int):
+
+        queryset = UserComment.objects.filter(user=request.user, movie_id=movie_id) # type: QuerySet
+        if not queryset.exists():
+            serializer = UserActionResSerializer(
+                data={'result' : False, 'error_message' : '해당 영화에 댓글을 작성하지 않았습니다.'}
+            )
+            ## is_vaild 실행 없이 serializer가 올바른 데이터를 가지고 있다고 신뢰한다면
+            ## initial_data로 바로 접근하여 전송할 수 있습니다.
+            serializer.is_valid()
+            return Response(serializer.data, status=HttpResponseNotFound.status_code)
+
+        else:
+            comment = queryset.get() # type: UserComment
+            serializer = UserCommentModelSerializer(comment, many=False)
+            return Response(serializer.data)
+
+
+
 class UserMyInfoView(APIView):
 
     permission_classes = (IsAuthenticated,)
@@ -216,7 +242,7 @@ class UserView(mixins.RetrieveModelMixin, GenericViewSet):
     serializer_class = UserModelSerializer
 
     ## 여기서 Action을 사용한다면, PK가 필요하게 됩니다.
-
+    ## 따라서 Action으로 작성하지 않고, 별도의 APIView로 기능을 분리하여 작성합니다.
 
 
 ## https://sss20-02.tistory.com/66
@@ -231,6 +257,7 @@ urlpatters_action = [
     path('join', UserJoinActionView.as_view()),
     path('edit_comment', UserCommentEditActionView.as_view()),
     path('delete_comment', UserCommentDeleteActionView.as_view()),
+    path('my_comment/<int:movie_id>', UserMyMovieCommentView.as_view())
 ]
 
 urlpatterns = [
