@@ -47,7 +47,7 @@ class UserLoginActionView(APIView):
             result = req_serializer.is_valid(raise_exception=True)
         except ValidationError as err:
             res_serializer = UserActionResSerializer(
-                data={'result': False, 'error_message': "\n".join(err.detail)}
+                data={'result': False, 'error_message': str(err.detail)}
             )
             res_serializer.is_valid()
             return Response(res_serializer.data)
@@ -96,7 +96,7 @@ class UserJoinActionView(APIView):
             result = req_serializer.is_valid(raise_exception=True)
         except ValidationError as err:
             res_serializer = UserActionResSerializer(
-                data={'result' : False, 'error_message' : "\n".join(err.detail)}
+                data={'result' : False, 'error_message' : str(err.detail)}
             )
             res_serializer.is_valid()
             return Response(res_serializer.data)
@@ -153,7 +153,7 @@ class UserCommentEditActionView(APIView):
             result = req_serializer.is_valid(raise_exception=True)
         except ValidationError as err:
             res_serializer = UserActionResSerializer(
-                data={'result': False, 'error_message': "\n".join(err.detail)}
+                data={'result': False, 'error_message': str(err.detail)}
             )
             res_serializer.is_valid()
             return Response(res_serializer.data)
@@ -187,7 +187,7 @@ class UserCommentDeleteActionView(APIView):
             result = req_serializer.is_valid(raise_exception=True)
         except ValidationError as err:
             res_serializer = UserActionResSerializer(
-                data={'result' : False, 'error_message' : "\n".join(err.detail)}
+                data={'result' : False, 'error_message' : str(err.detail)}
             )
             res_serializer.is_valid()
             return Response(res_serializer.data)
@@ -196,7 +196,7 @@ class UserCommentDeleteActionView(APIView):
         req_data = req_serializer.data
 
         ## 사용자 계정으로 삭제 시도
-        ## 해당 코멘트가 없다면 삭제되지 않지만, 별도의 추가 작업을 일어나지 않습니다.
+        ## 해당 코멘트가 없다면 삭제되지 않지만, 별도의 추가 작업은 일어나지 않습니다.
         UserComment.objects.filter(user=request.user, movie_id=req_data['movie_id']).delete()
         res_serializer = UserActionResSerializer(
             data={'result': True}
