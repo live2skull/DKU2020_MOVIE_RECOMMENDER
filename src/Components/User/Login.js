@@ -24,11 +24,16 @@ class Login extends React.Component {
         return (
             axios.post("/data/users/login", LoginData)
                 .then((response) => {
+                    if(response.data.result === true){
                     alert('로그인 되었습니다 !');
                     localStorage.setItem("token",response.data.auth_token);
+                    this.props.history.push('/');
+                    }
+                    else{
+                        alert(response.data.error_message);
+                    }
                     // localStorage.setItem("nickname",response.data.nickname);
                     // axios.defaults.headers.common['Authorization'] = `Token ${response.data.auth_token}`; // 토큰값 헤더에 추가
-                    this.props.history.push('/');
                 }).catch(() => {
                 alert('로그인에 실패하셨습니다 !');
             })
