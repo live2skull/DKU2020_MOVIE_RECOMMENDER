@@ -44,7 +44,7 @@ class Login extends React.Component {
                 <Topbar/>
                 <Grid textAlign='center' style={{height: '80vh'}} verticalAlign='middle'>
                     <Grid.Column style={{maxWidth: 450}}>
-                        <Form size='large' onSubmit={this.handleSubmit}>
+                        <Form size='large' onSubmit={this.handleSubmit} method={'POST'}>
                             <Segment stacked>
                                 <Form.Input
                                     fluid icon='user'

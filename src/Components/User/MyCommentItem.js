@@ -30,7 +30,7 @@ class MyCommentItem extends React.Component {
     }
 
     _getTitle() {
-        axios.get("/data/movies/" + this.props.movie_id)
+        axios.get("http://api.movie.live2skull.kr:9090/data/movies/" + this.props.movie_id)
             .then(movie => {
                 this.setState({
                     title: movie.data.name
@@ -40,7 +40,7 @@ class MyCommentItem extends React.Component {
 
     _deleteComment() {
         return (
-            axios.post("/data/users/delete_comment", {movie_id: this.props.movie_id},
+            axios.post("http://api.movie.live2skull.kr:9090/data/users/delete_comment", {movie_id: this.props.movie_id},
                 {headers: {'Authorization': `Token ${localStorage.getItem("token")}`}}
             )
                 .then((response) => {
@@ -74,24 +74,6 @@ class MyCommentItem extends React.Component {
                     </Button>
                 </Table.Cell>
             </Table.Row>
-            // <Segment>
-            //     <Segment.Group horizontal>
-            //         <Segment>영화 제목</Segment>
-            //         <Segment>{this.state.title}</Segment>
-            //         <Segment>평점</Segment>
-            //         <Segment>{this.props.score}</Segment>
-            //     </Segment.Group>
-            //     <Segment.Group horizontal>
-            //         <Segment>작성 내용</Segment>
-            //         <Segment>{this.props.body}</Segment>
-            //     </Segment.Group>
-            //     <Button as={Link} to={'/movieinfo?movie_id='+this.props.movie_id}>
-            //         수정
-            //     </Button>
-            //     <Button onClick={this.delete}>
-            //         삭제
-            //     </Button>
-            // </Segment>
         )
     }
 }

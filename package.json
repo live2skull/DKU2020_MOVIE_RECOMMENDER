@@ -18,8 +18,7 @@
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^2.0.0"
   },
-  "_comment" : "proxy 부분이 cors에러 해결 부분",
-  "proxy" : "http://api.movie.live2skull.kr:9090/",
+
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
