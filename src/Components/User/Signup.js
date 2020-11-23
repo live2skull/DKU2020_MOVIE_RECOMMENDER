@@ -1,6 +1,6 @@
 import React from "react";
 import {Form, Segment, Grid} from "semantic-ui-react";
-import Topbar1 from "../Menu/Topbar1";
+import Topbar from "../Menu/Topbar";
 import axios from "axios";
 
 class Signup extends React.Component {
@@ -45,7 +45,7 @@ class Signup extends React.Component {
 
         return (
             <div>
-                <Topbar1/>
+                <Topbar/>
                 <Grid textAlign='center' style={{height: '80vh'}} verticalAlign='middle'>
                     <Grid.Column style={{maxWidth: 450}}>
                         <Form size='large' onSubmit={this.handleSubmit}>
@@ -53,7 +53,7 @@ class Signup extends React.Component {
                                 <Form.Input
                                     fluid icon='mail'
                                     iconPosition='left'
-                                    placeholder='이메일'
+                                    placeholder='아이디 (이메일 형식)'
                                     name='email'
                                     type='email'
                                     value={email}
@@ -62,7 +62,7 @@ class Signup extends React.Component {
                                 <Form.Input
                                     fluid icon='lock'
                                     iconPosition='left'
-                                    placeholder='비밀번호 8자리 이상'
+                                    placeholder='비밀번호 6자리 이상'
                                     name='password'
                                     type='password'
                                     value={password}

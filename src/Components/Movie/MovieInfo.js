@@ -1,8 +1,7 @@
 import React from "react";
 import {Segment, Header, Image, Rating, Sticky} from "semantic-ui-react";
-import Topbar1 from "../Menu/Topbar1";
-import Topbar2 from "../Menu/Topbar2";
-import UserComment from "./UserComment"
+import Topbar from "../Menu/Topbar";
+import UserComment from "../Comment/UserComment"
 import Loading from "../Decorator/Loading";
 import axios from "axios";
 import queryString from "query-string";
@@ -51,10 +50,9 @@ class MovieInfo extends React.Component {
         return (
             <div>
                 <Sticky>
-                    <Topbar1/>
-                    <Topbar2/>
+                    <Topbar/>
                 </Sticky>
-                <Segment.Group rasied>
+                <Segment.Group>
                     <Segment.Group horizontal>
                         <Image bordered rounded size='medium' src={movie.img_url}/>
                         <Segment.Group vertical>
@@ -71,7 +69,6 @@ class MovieInfo extends React.Component {
                                 </Header>
                             </Segment>
                             <Segment>장르 : {movie.genres.map(genre => genre.name).join(", ")} </Segment>
-                            {/*<Segment>감독 : 리차드 커티스</Segment>*/}
                             <Segment>출연 : {movie.actors.map(actor => actor.name).join(", ")}</Segment>
                             <Segment>개봉일 : {movie.opened_at}</Segment>
                             <Segment>

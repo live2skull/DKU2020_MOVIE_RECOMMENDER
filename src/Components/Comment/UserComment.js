@@ -2,6 +2,7 @@ import React from "react";
 import {Header, Form, Rating, Segment, Menu} from "semantic-ui-react";
 import axios from "axios"; // API 연동
 import CommentItem from "./CommentItem";
+import UserCommentItem from "./UserCommentItem";
 
 class UserComment extends React.Component {
     state = {
@@ -20,23 +21,6 @@ class UserComment extends React.Component {
 
     handleSubmit = () => {
         this._submitComment();
-    }
-
-    _submitComment() {
-        const CommentData = {
-            movie_id: this.props.movie_id,
-            score: this.state.score,
-            body: this.state.description
-        }
-        return (
-            axios.post("/data/users/edit_comment", CommentData)
-                .then((response) => {
-                    if (response.data.result === true)
-                        window.location.reload()
-                }).catch(() => {
-                alert('작성에 실패하셨습니다 !');
-            })
-        )
     }
 
     constructor(props) {
@@ -70,6 +54,7 @@ class UserComment extends React.Component {
 
     componentDidMount() {
         this._getCommentList();
+        this._getUserCommentList();
     }
 
     _getCommentList() {
@@ -84,9 +69,38 @@ class UserComment extends React.Component {
             });
     }
 
-    // _getUserCommentList() {
-    //     axios.get("/data/users/" + this.props.user)
-    // }
+    _getUserCommentList() {
+        axios.get("/data/user_comments/" + this.props.movie_id)
+            .then(data => {
+                this.setState({
+                    userCommentList: data.data.results
+                })
+            })
+            .catch(error => {
+                console.log(error)
+            });
+    }
+
+    _submitComment() {
+        const CommentData = {
+            movie_id: this.props.movie_id,
+            score: this.state.score,
+            body: this.state.description
+        }
+        return (
+            axios.post("/data/users/edit_comment", CommentData,
+                {headers: {'Authorization': `Token ${localStorage.getItem("token")}`}}
+            )
+                .then((response) => {
+                    if (response.data.result === true)
+                        window.location.reload()
+                }).catch(() => {
+                alert('작성에 실패하셨습니다 !');
+            })
+        )
+    }
+
+
     render() {
         const {description} = this.state;
 
@@ -94,15 +108,19 @@ class UserComment extends React.Component {
 
         // eslint-disable-next-line array-callback-return
         this.state.commentList.map(comment => {
-            comments.push(<CommentItem score={comment.score} body={comment.body}/>);
+            comments.push(<CommentItem score={comment.score}
+                                       body={comment.body}/>);
         })
 
 
         const user_comments = [];
 
         // eslint-disable-next-line array-callback-return
-        this.state.commentList.map(comment => {
-            comments.push(<CommentItem score={comment.score} body={comment.body}/>);
+        this.state.userCommentList.map(u_comment => {
+            user_comments.push(<UserCommentItem movie_id={this.props.movie_id}
+                                                nickname={u_comment.nickname}
+                                                score={u_comment.score}
+                                                body={u_comment.body}/>);
         })
 
 
@@ -134,10 +152,6 @@ class UserComment extends React.Component {
                             {user_comments}
                         </Segment.Group>
                     </Segment>
-                    <Menu widths={2}>
-                        <Menu.Item onClick={this.handleItemDown}>Down</Menu.Item>
-                        <Menu.Item onClick={this.handleItemUp}>Up</Menu.Item>
-                    </Menu>
                 </Segment>
                 <br/>
 

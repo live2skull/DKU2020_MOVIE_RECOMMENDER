@@ -1,12 +1,8 @@
 import React from "react";
 import {Rating, Comment, Segment} from "semantic-ui-react";
-import usericon from "./usericon.png";
+import usericon from "../Movie/usericon.png";
 
-class UserCommentItem extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
+class CommentItem extends React.Component {
     render() {
         return (
             <Segment>
@@ -14,7 +10,7 @@ class UserCommentItem extends React.Component {
                     <Comment>
                         <Comment.Avatar src={usericon}/>
                         <Comment.Content>
-                            <Comment.Author>{this.props.nickname}</Comment.Author>
+                            <Comment.Author>익명</Comment.Author>
                             <Comment.Metadata>
                                 <div>{this.props.score}&nbsp;&nbsp;&nbsp;
                                     <Rating icon='star' rating={parseInt(this.props.score)} maxRating={10} disabled />
@@ -31,4 +27,4 @@ class UserCommentItem extends React.Component {
     }
 }
 
-export default UserCommentItem;
+export default CommentItem;

@@ -1,9 +1,9 @@
 import React from 'react';
 import {Card, Dropdown, Form, Loader, Menu, Sticky} from "semantic-ui-react";
 import axios from "axios";
-import MovieItem from "./Movie/MovieItem";
-import Loading from "./Decorator/Loading";
-import Topbar1 from "./Menu/Topbar1";
+import MovieItem from "./MovieItem";
+import Loading from "../Decorator/Loading";
+import Topbar from "../Menu/Topbar";
 
 const cateoptions = [
     {key: 1, text: "드라마", value: 1},
@@ -34,7 +34,7 @@ const cateoptions = [
     {key: 26, text: "공연실황", value: 29}
 ]
 
-class MovieListPageByFilter extends React.Component {
+class MovieListPage extends React.Component {
     constructor(props) {
         super(props);
 
@@ -135,7 +135,7 @@ class MovieListPageByFilter extends React.Component {
             return (
                 <div>
                     <Sticky onBottom>
-                        <Topbar1/>
+                        <Topbar/>
                         <Menu size='medium' style={{marginTop: 0}} borderless>
                             <Menu.Item>
                                 <Dropdown
@@ -146,6 +146,10 @@ class MovieListPageByFilter extends React.Component {
                                     value={value}
                                 />
                             </Menu.Item>
+
+                            <Menu.Item
+                                name='최소 평점 선택'
+                            />
                             <Menu.Item
                                 name='1'
                                 active={this.state.score_gte === '1'}
@@ -203,7 +207,7 @@ class MovieListPageByFilter extends React.Component {
                                             <Form.Input
                                                 placeholder='영화 제목을 입력하세요'
                                                 value={this.state.title}
-                                                onChange={this.handleChange/*.bind(this)*/}
+                                                onChange={this.handleChange}
                                             />
                                             <Form.Button content='선택한 모든 옵션 적용'/>
                                         </Form.Group>
@@ -223,13 +227,93 @@ class MovieListPageByFilter extends React.Component {
         }
 
         return (
+            <div>
+            <Sticky onBottom>
+                <Topbar/>
+                <Menu size='medium' style={{marginTop: 0}} borderless>
+                    <Menu.Item>
+                        <Dropdown
+                            onChange={this.handleChangeGenre}
+                            options={cateoptions}
+                            placeholder="전체 보기"
+                            selection
+                            value={value}
+                        />
+                    </Menu.Item>
+                    <Menu.Item
+                        name='1'
+                        active={this.state.score_gte === '1'}
+                        onClick={this.handleScoreClick}
+                    />
+                    <Menu.Item
+                        name='2'
+                        active={this.state.score_gte === '2'}
+                        onClick={this.handleScoreClick}
+                    />
+                    <Menu.Item
+                        name='3'
+                        active={this.state.score_gte === '3'}
+                        onClick={this.handleScoreClick}
+                    />
+                    <Menu.Item
+                        name='4'
+                        active={this.state.score_gte === '4'}
+                        onClick={this.handleScoreClick}
+                    />
+                    <Menu.Item
+                        name='5'
+                        active={this.state.score_gte === '5'}
+                        onClick={this.handleScoreClick}
+                    />
+                    <Menu.Item
+                        name='6'
+                        active={this.state.score_gte === '6'}
+                        onClick={this.handleScoreClick}
+                    />
+                    <Menu.Item
+                        name='7'
+                        active={this.state.score_gte === '7'}
+                        onClick={this.handleScoreClick}
+                    />
+                    <Menu.Item
+                        name='8'
+                        active={this.state.score_gte === '8'}
+                        onClick={this.handleScoreClick}
+                    />
+                    <Menu.Item
+                        name='9'
+                        active={this.state.score_gte === '9'}
+                        onClick={this.handleScoreClick}
+                    />
+                    <Menu.Item
+                        name='10'
+                        active={this.state.score_gte === '10'}
+                        onClick={this.handleScoreClick}
+                    />
+                    <Menu.Menu>
+                        <Menu.Item fitted='vertically'>
+                            <Form onSubmit={this.handleSubmit} widths='equal'>
+                                <Form.Group style={{margin: 0}}>
+                                    <Form.Input
+                                        placeholder='영화 제목을 입력하세요'
+                                        value={this.state.title}
+                                        onChange={this.handleChange}
+                                    />
+                                    <Form.Button content='선택한 모든 옵션 적용'/>
+                                </Form.Group>
+                            </Form>
+                        </Menu.Item>
+                    </Menu.Menu>
+                </Menu>
+            </Sticky>
             <Card.Group centered itemsPerRow={5}>
                 {items}
             </Card.Group>
+            </div>
         )
 
     }
 }
 
 
-export default MovieListPageByFilter;
+export default MovieListPage;
