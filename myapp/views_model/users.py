@@ -22,6 +22,8 @@ from ..serializers.user import UserModelSerializer, UserActionResSerializer,\
     UserCommentDelReqSerializer, UserCommentEditReqSerializer, \
     UserMyMovieCommentResSerializer
 
+from . import PreFlightSupportAPIViewMixin
+
 import hashlib
 from binascii import hexlify
 
@@ -128,7 +130,7 @@ APIView 는 최소한의 코드만 구현되어 있습니다.
 인증 등을 제외한 나머지 기능은 직접 구현합니다.
 """
 
-class UserLogoutActionView(APIView):
+class UserLogoutActionView(PreFlightSupportAPIViewMixin, APIView):
 
     permission_classes = (IsAuthenticated, )
 
@@ -143,7 +145,7 @@ class UserLogoutActionView(APIView):
         return Response(res_serializer.data)
 
 
-class UserCommentEditActionView(APIView):
+class UserCommentEditActionView(PreFlightSupportAPIViewMixin, APIView):
 
     permission_classes = (IsAuthenticated,)
 
@@ -176,7 +178,7 @@ class UserCommentEditActionView(APIView):
         return Response(res_serializer.data)
 
 
-class UserCommentDeleteActionView(APIView):
+class UserCommentDeleteActionView(PreFlightSupportAPIViewMixin, APIView):
 
     permission_classes = (IsAuthenticated,)
 
@@ -206,7 +208,7 @@ class UserCommentDeleteActionView(APIView):
         return Response(res_serializer.data)
 
 
-class UserMyMovieCommentView(APIView):
+class UserMyMovieCommentView(PreFlightSupportAPIViewMixin, APIView):
 
     permission_classes = (IsAuthenticated, )
 
@@ -233,13 +235,14 @@ class UserMyMovieCommentView(APIView):
 
 
 
-class UserMyInfoView(APIView):
+class UserMyInfoView(PreFlightSupportAPIViewMixin, APIView):
 
     permission_classes = (IsAuthenticated,)
 
     def get(self, request: Request):
         serializer = UserModelSerializer(request.user, many=False)
         return Response(serializer.data)
+
 
 
 class UserView(mixins.RetrieveModelMixin, GenericViewSet):

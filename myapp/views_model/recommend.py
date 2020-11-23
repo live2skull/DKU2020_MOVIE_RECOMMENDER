@@ -21,13 +21,14 @@ from . import StandardPagnation
 
 
 from ..MovieRecommendation import MovieRecommendation
+from . import PreFlightSupportAPIViewMixin
 
 recommendation = MovieRecommendation()
 
 ## TODO: 사용자 아이디 변경 필요 (로그인 기능 등 구현시)
 
 
-class UserBasedRecommendView(APIView):
+class UserBasedRecommendView(PreFlightSupportAPIViewMixin, APIView):
 
     permission_classes = (IsAuthenticated,)
 
