@@ -58,7 +58,7 @@ class UserComment extends React.Component {
     }
 
     _getCommentList() {
-        axios.get("/data/comments/" + this.props.movie_id + "?page=" + this.state.cpage_id)
+        axios.get("http://api.movie.live2skull.kr:9090/data/comments/" + this.props.movie_id + "?page=" + this.state.cpage_id)
             .then(data => {
                 this.setState({
                     commentList: data.data.results
@@ -70,7 +70,7 @@ class UserComment extends React.Component {
     }
 
     _getUserCommentList() {
-        axios.get("/data/user_comments/" + this.props.movie_id)
+        axios.get("http://api.movie.live2skull.kr:9090/data/user_comments/" + this.props.movie_id)
             .then(data => {
                 this.setState({
                     userCommentList: data.data.results
@@ -88,7 +88,7 @@ class UserComment extends React.Component {
             body: this.state.description
         }
         return (
-            axios.post("/data/users/edit_comment", CommentData,
+            axios.post("http://api.movie.live2skull.kr:9090/data/users/edit_comment", CommentData,
                 {headers: {'Authorization': `Token ${localStorage.getItem("token")}`}}
             )
                 .then((response) => {

@@ -17,7 +17,7 @@ class UserInfo extends React.Component {
     }
 
     _infoParse() {
-        axios.get("/data/users/myinfo", {headers: {'Authorization': `Token ${localStorage.getItem("token")}`}}
+        axios.get("http://api.movie.live2skull.kr:9090/data/users/myinfo", {headers: {'Authorization': `Token ${localStorage.getItem("token")}`}}
         ).then(data => {
             this.setState({
                 email: data.data.email,

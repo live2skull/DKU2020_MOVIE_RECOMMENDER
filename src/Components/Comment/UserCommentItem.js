@@ -16,7 +16,7 @@ class UserCommentItem extends React.Component {
     }
 
     _nicknameParse() {
-        axios.get("/data/users/myinfo",
+        axios.get("http://api.movie.live2skull.kr:9090/data/users/myinfo",
             {headers: {'Authorization': `Token ${localStorage.getItem("token")}`}}
         ).then(data => {
             this.setState({
@@ -29,7 +29,7 @@ class UserCommentItem extends React.Component {
 
     _deleteComment() {
         return (
-            axios.post("/data/users/delete_comment", {movie_id: this.props.movie_id},
+            axios.post("http://api.movie.live2skull.kr:9090/data/users/delete_comment", {movie_id: this.props.movie_id},
                 {headers: {'Authorization': `Token ${localStorage.getItem("token")}`}}
             )
                 .then((response) => {

@@ -83,7 +83,7 @@ class MovieListPage extends React.Component {
     }
 
     _getList() {
-        axios.get("/data/movies/?page=" + this.state.page_id
+        axios.get("http://api.movie.live2skull.kr:9090/data/movies/?page=" + this.state.page_id
             + "&genre=" + this.state.genre_id
             + "&title=" + this.state.title
             + "&score_gte=" + this.state.score_gte

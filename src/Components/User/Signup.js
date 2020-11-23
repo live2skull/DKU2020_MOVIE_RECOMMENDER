@@ -25,7 +25,7 @@ class Signup extends React.Component {
             nickname: this.state.nickname
         }
         return (
-            axios.post("/data/users/join", JoinData)
+            axios.post("http://api.movie.live2skull.kr:9090/data/users/join", JoinData)
                 .then((response) => {
                     if (response.data.result === false) {
                         alert(response.data.error_message);

@@ -18,7 +18,7 @@ class MyCommentItem extends React.Component {
     }
 
     _nicknameParse() {
-        axios.get("/data/users/myinfo",
+        axios.get("http://api.movie.live2skull.kr:9090/data/users/myinfo",
             {headers: {'Authorization': `Token ${localStorage.getItem("token")}`}}
         ).then(data => {
             this.setState({

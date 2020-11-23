@@ -23,7 +23,7 @@ class MovieInfo extends React.Component {
     }
 
     _getMovie() {
-        axios.get("/data/movies/" + this.state.movie_id)
+        axios.get("http://api.movie.live2skull.kr:9090/data/movies/" + this.state.movie_id)
             .then(data => {
                 this.setState({
                     movie: data.data
