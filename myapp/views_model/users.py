@@ -75,6 +75,7 @@ class UserLoginActionView(APIView):
                 data={'result': False, 'error_message': "아이디 또는 비밀번호 오류입니다."}
             )
             res_serializer.is_valid()
+            return Response(res_serializer.data)
 
         except Exception as err:
             capture_exception(err)

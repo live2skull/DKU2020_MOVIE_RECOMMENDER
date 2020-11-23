@@ -149,6 +149,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 PRINT_LOG_LEVEL = 'INFO' if getenv('PRINT_LOG_LEVEL') is None else getenv('PRINT_LOG_LEVEL')
+SAVE_LOG_LEVEL = 'INFO' if getenv('SAVE_LOG_LEVEL') is None else getenv('SAVE_LOG_LEVEL')
 
 LOGGING = {
     'version': 1,
@@ -165,13 +166,28 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'default'
         },
+        'file' : {
+            'level' : SAVE_LOG_LEVEL,
+            'class' : 'logging.handlers.RotatingFileHandler',
+            'filename' : 'django.log',
+            'formatter' : 'default',
+            # https://jeunjeun.tistory.com/5
+
+        }
     },
     'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'propagate': True,
-            'level': 'INFO',
-        },
+        # 'django': {
+        #     'handlers': ['file'],
+        #     'propagate': True,
+        #     'level': SAVE_LOG_LEVEL,
+        # },
+        #
+        # 'django.request' : {
+        #     'handlers' : ['file'],
+        #     'propagate' : True,
+        #     'level' : SAVE_LOG_LEVEL
+        # },
+
         'urllib.connectionpool' : {
             'handlers': ['console'],
             'propagate': True,
