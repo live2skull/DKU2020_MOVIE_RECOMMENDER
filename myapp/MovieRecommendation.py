@@ -15,6 +15,20 @@ from .models import User, UserComment
 
 logger = getLogger(__name__)
 
+MAX_MATCHED_USERS = 100
+MAX_COMMENTS_EACH_MATCHED_USER = 20
+
+class RecommendationException(Exception):
+
+    detail = None # type: str
+
+    def __init__(self, detail: str):
+        self.detail = detail
+
+    def __str__(self):
+        return self.detail
+
+
 class MovieRecommendation:
 
     def get_recommendations_user_based(self, user: User, allowance=2, maximum=30) -> List[Movie]:
@@ -28,10 +42,19 @@ class MovieRecommendation:
         :return: 추천될 영화 리스트입니다.
         """
 
+        ## 2020. 11. 24 수정
+        ## maximum 값은 사실상 전체 실행 속도에 크게 의미가 없으며,
+        ## 활용 가능 사용자 수 matchedUsers 를 100 정도로 조정하여 다시 테스트합니다.
+
         userComments = list(user.comments.all()) # type: List[UserComment]
 
         # 사용자의 영화 평점이 존재하지 않거나 5개 이상인 경우, 진행할 수 없습니다.
-        assert 5 >= len(userComments) >= 1
+
+        if not 5 >= len(userComments) >= 2:
+            raise RecommendationException("추천을 위해 2개 이상, 5개 이하의 영화 리뷰를 작성해주세요.")
+
+        ## TODO: 확인 대상 영화가 추천 댓글이 없는 경우?
+        ## TODO: 우선 이대로 진행해도 되지 않을까 싶음.
 
         # 1. 추천을 원하는 대상 사용자의 모든 영화 평가를 불러옵니다.
         querySet = MovieUser.objects.all() # type: QuerySet
@@ -57,13 +80,13 @@ class MovieRecommendation:
         # 3. 해당 사용자들이 평가한 다른 영화 평점을 불러옵니다.
         # 점수 카운팅을 위한 임시변수
         movies_dict = {}
-        matchedUsers = set(querySet.order_by('-score_avg')[:200])
+        matchedUsers = set(querySet.order_by('-score_avg')[:MAX_MATCHED_USERS])
         logger.debug("querySet executed : users: %s" % len(matchedUsers))
 
         for matchedUser in matchedUsers:
 
             # maximum - 20개까지 점수로 선정합니다.
-            for comment in matchedUser.comments.order_by('-score')[:20]:
+            for comment in matchedUser.comments.order_by('-score')[:MAX_COMMENTS_EACH_MATCHED_USER]:
                 movie_id = comment.movie_id
 
                 if movie_id not in movies_dict.keys():
