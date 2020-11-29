@@ -38,7 +38,7 @@ class MainPage extends React.Component {
                             </p>
 
                             <p style={{fontSize: '1.33em'}}>
-                                <b>맞춤 추천</b> 페이지에서는 <b>최소 #개</b>의 영화의 평가를 남겨주시면<br/>
+                                <b>맞춤 추천</b> 페이지에서는 <b>최소 2개 최대 5개</b>의 영화의 평가를 남겨주시면<br/>
                                 추천 알고리즘을 통하여 사용자에게 알맞는 영화들을 출력합니다.
                             </p>
 

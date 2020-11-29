@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const TOKEN_KEY = "token"
 
-class RestClient {
+class RestClient{
     isLoggedIn() {
         return this.getToken() !== null;
     }

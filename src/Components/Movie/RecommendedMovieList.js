@@ -47,7 +47,12 @@ class RecommendedMovieList extends React.Component {
             return (
                 <div>
                     <Topbar/>
-                    <Loader active inline='centered'>추천중 입니다</Loader>
+                    <br/>
+                    <Loader active inline='centered'>
+                        <b>*2개 이상 5개 이하*</b> 영화에서 평점과 댓글을 남겨야 하며<br/>
+                        조건이 충족되었다면 10초 이내에 결과가 나타납니다.<br/>
+                        추천리스트 가져오는 중..
+                    </Loader>
                 </div>
             )
         }
