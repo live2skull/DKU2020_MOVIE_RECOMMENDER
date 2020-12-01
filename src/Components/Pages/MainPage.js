@@ -1,9 +1,9 @@
-import React from 'react';
-import Topbar from './Menu/Topbar';
-import {Grid, Header} from "semantic-ui-react";
+import React from 'react'
+import {Grid, Header} from "semantic-ui-react"
+import Topbar from '../Menu/Topbar'
 
+// 메인 페이지 컴포넌트입니다.
 class MainPage extends React.Component {
-
     render() {
         return (
             <div>
@@ -52,7 +52,6 @@ class MainPage extends React.Component {
                                 영화 평가는 각 영화당 <b>한번</b>만 가능합니다. <br/>
                                 자신이 작성한 평가를 수정하려면 <b>평가하기</b>에 새로 작성하면 됩니다.
                             </p>
-
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
@@ -61,4 +60,4 @@ class MainPage extends React.Component {
     }
 }
 
-export default MainPage;
+export default MainPage

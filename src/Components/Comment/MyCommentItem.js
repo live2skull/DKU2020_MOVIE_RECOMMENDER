@@ -1,24 +1,28 @@
-import React from "react";
-import {Link} from 'react-router-dom';
-import {Button, Table} from "semantic-ui-react";
-import axios from "axios";
+import React from "react"
+import {Link} from 'react-router-dom'
+import {Button, Table} from "semantic-ui-react"
+import axios from "axios"
 
+// 자신이 작성한 평가를 만드는 컴포넌트입니다. 회원 정보 페이지에서 사용됩니다.
 class MyCommentItem extends React.Component {
+    // state 로 nickname, title
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             nickname: '',
             title: ''
         }
     }
 
+    // 컴포넌트가 마운트된 직후, 즉 컴포넌트가 만들어지고 첫 렌더링을 마친 후 실행되는 함수입니다.
     componentDidMount() {
         this._nicknameParse()
-        this._getTitle()
+        this._titleParse()
     }
 
+    // API 의 유저 정보를 출력하는 기능에서 nickname 만 파싱하여 state 의 nickname 으로 설정하는 함수입니다.
     _nicknameParse() {
-        axios.get("http://api.movie.live2skull.kr:9090/data/users/myinfo",
+        axios.get("https://api.movie.live2skull.kr/data/users/myinfo",
             {headers: {'Authorization': `Token ${localStorage.getItem("token")}`}}
         ).then(data => {
             this.setState({
@@ -26,10 +30,11 @@ class MyCommentItem extends React.Component {
             })
         }).catch(error => {
             console.log(error)
-        });
+        })
     }
 
-    _getTitle() {
+    // API 의 영화 하나의 정보를 출력하는 기능에서 title 만 파싱하여 state 의 title 로 설정하는 함수입니다.
+    _titleParse() {
         axios.get("https://api.movie.live2skull.kr/data/movies/" + this.props.movie_id)
             .then(movie => {
                 this.setState({
@@ -38,6 +43,7 @@ class MyCommentItem extends React.Component {
             })
     }
 
+    // API 의 댓글 삭제 기능을 구현한 함수입니다.
     _deleteComment() {
         return (
             axios.post("https://api.movie.live2skull.kr/data/users/delete_comment", {movie_id: this.props.movie_id},
@@ -47,16 +53,17 @@ class MyCommentItem extends React.Component {
                     if (response.data.result === true) {
                         window.location.reload()
                     } else {
-                        alert(response.data.error_message);
+                        alert(response.data.error_message)
                     }
                 }).catch(() => {
-                alert('삭제에 실패하셨습니다 !');
+                alert('삭제에 실패하셨습니다 !')
             })
         )
     }
 
-    delete = () => {
-        this._deleteComment();
+    // "삭제" 버튼을 클릭 시 실행되는 함수입니다.
+    handleSubmit = () => {
+        this._deleteComment()
     }
 
     render() {
@@ -66,10 +73,11 @@ class MyCommentItem extends React.Component {
                 <Table.Cell>{this.props.score}</Table.Cell>
                 <Table.Cell>{this.props.body}</Table.Cell>
                 <Table.Cell textAlign='right'>
+                    {/* 수정 버튼 클릭 시, 해당 영화 정보 페이지로 이동합니다. */}
                     <Button as={Link} to={'/movieinfo?movie_id=' + this.props.movie_id}>
                         수정
                     </Button>
-                    <Button onClick={this.delete}>
+                    <Button onClick={this.handleSubmit}>
                         삭제
                     </Button>
                 </Table.Cell>
@@ -78,4 +86,4 @@ class MyCommentItem extends React.Component {
     }
 }
 
-export default MyCommentItem;
+export default MyCommentItem

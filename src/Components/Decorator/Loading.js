@@ -1,6 +1,7 @@
-import React from "react";
-import {Loader, Dimmer} from "semantic-ui-react";
+import React from "react"
+import {Loader, Dimmer} from "semantic-ui-react"
 
+// 로딩중 화면을 출력하는 컴포넌트입니다.
 class Loading extends React.Component {
     render() {
         return(
@@ -11,4 +12,4 @@ class Loading extends React.Component {
     }
 }
 
-export default Loading;
+export default Loading

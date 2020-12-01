@@ -1,9 +1,10 @@
-import React from "react";
-import {Form, Segment, Grid} from "semantic-ui-react";
-import Topbar from "../Menu/Topbar";
-import axios from "axios";
+import React from "react"
+import {Form, Segment, Grid} from "semantic-ui-react"
+import axios from "axios"
+import Topbar from "../Menu/Topbar"
 
-class Signup extends React.Component {
+// 회원가입 페이지 컴포넌트입니다.
+class SignupPage extends React.Component {
     state = {
         email: '',
         password: '',
@@ -11,13 +12,17 @@ class Signup extends React.Component {
         nickname: '',
     }
 
+    // 각 텍스트 입력 상자에 문자열을 입력하면 각 name 에 해당하는 state 의 값으로 설정하는 함수입니다.
     handleChange = (e, {name, value}) => this.setState({[name]: value})
 
+    // "가입" 버튼을 클릭시 실행하는 함수입니다.
     handleSubmit = () => {
         this._join()
     }
 
+    // API 의 회원가입 기능을 구현한 함수입니다.
     _join() {
+        // API 의 회원가입 기능을 이용할 때, 각 데이터를 한번에 넘기기 위한 구조체 입니다.
         const JoinData = {
             email: this.state.email,
             password: this.state.password,
@@ -27,15 +32,14 @@ class Signup extends React.Component {
         return (
             axios.post("https://api.movie.live2skull.kr/data/users/join", JoinData)
                 .then((response) => {
-                    if (response.data.result === false) {
-                        alert(response.data.error_message);
-                    }
-                    else {
-                        alert('가입 되었습니다 !');
-                        this.props.history.push('/login');
+                    if (response.data.result === false) {       // API 에 post 하였을 때, 반환되는 result 가 false 이면
+                        alert(response.data.error_message)      // 반환되는 에러 메시지를 alert 합니다.
+                    } else {
+                        alert('가입 되었습니다 !')                // API 에 post 하였을 때, 반환되는 result 가 true 이면
+                        this.props.history.push('/login')        // 로그인 페이지로 이동합니다.
                     }
                 }).catch(() => {
-                alert('가입에 실패하셨습니다 !');
+                alert('가입에 실패하셨습니다 !')
             })
         )
     }
@@ -98,4 +102,4 @@ class Signup extends React.Component {
     }
 }
 
-export default Signup;
+export default SignupPage
