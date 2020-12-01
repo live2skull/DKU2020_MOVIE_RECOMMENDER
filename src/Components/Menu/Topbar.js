@@ -5,7 +5,7 @@ import axios from "axios";
 
 class Topbar extends React.Component {
     _logout() {
-        axios.post("http://api.movie.live2skull.kr:9090/data/users/logout", {}, {headers: {'Authorization': `Token ${localStorage.getItem("token")}`}})
+        axios.post("https://api.movie.live2skull.kr/data/users/logout", {}, {headers: {'Authorization': `Token ${localStorage.getItem("token")}`}})
             .then((response) => {
                     localStorage.removeItem("token");
                     localStorage.removeItem("nickname");

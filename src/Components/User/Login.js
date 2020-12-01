@@ -22,7 +22,7 @@ class Login extends React.Component {
         }
 
         return (
-            axios.post("http://api.movie.live2skull.kr:9090/data/users/login", LoginData)
+            axios.post("https://api.movie.live2skull.kr/data/users/login", LoginData)
                 .then((response) => {
                     if (response.data.result === true) {
                         alert('로그인 되었습니다 !');

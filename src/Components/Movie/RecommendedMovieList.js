@@ -22,7 +22,7 @@ class RecommendedMovieList extends React.Component {
             this.props.history.push('/login');
         }
 
-        axios.get("http://api.movie.live2skull.kr:9090/data/recommends",
+        axios.get("https://api.movie.live2skull.kr/data/recommends",
             {headers: {'Authorization': `Token ${localStorage.getItem("token")}`}}
         )
             .then(data => {

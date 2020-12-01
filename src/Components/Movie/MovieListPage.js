@@ -2,7 +2,6 @@ import React from 'react';
 import {Card, Dropdown, Form, Loader, Menu, Sticky} from "semantic-ui-react";
 import axios from "axios";
 import MovieItem from "./MovieItem";
-import Loading from "../Decorator/Loading";
 import Topbar from "../Menu/Topbar";
 
 const cateoptions = [
@@ -81,7 +80,7 @@ class MovieListPage extends React.Component {
     }
 
     _getList() {
-        axios.get("http://api.movie.live2skull.kr:9090/data/movies/?page=" + this.state.page_id
+        axios.get("https://api.movie.live2skull.kr/data/movies/?page=" + this.state.page_id
             + "&genre=" + this.state.genre_id
             + "&title=" + this.state.title
             + "&score_gte=" + this.state.score_gte

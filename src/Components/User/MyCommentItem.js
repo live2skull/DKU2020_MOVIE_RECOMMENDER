@@ -30,7 +30,7 @@ class MyCommentItem extends React.Component {
     }
 
     _getTitle() {
-        axios.get("http://api.movie.live2skull.kr:9090/data/movies/" + this.props.movie_id)
+        axios.get("https://api.movie.live2skull.kr/data/movies/" + this.props.movie_id)
             .then(movie => {
                 this.setState({
                     title: movie.data.name
@@ -40,7 +40,7 @@ class MyCommentItem extends React.Component {
 
     _deleteComment() {
         return (
-            axios.post("http://api.movie.live2skull.kr:9090/data/users/delete_comment", {movie_id: this.props.movie_id},
+            axios.post("https://api.movie.live2skull.kr/data/users/delete_comment", {movie_id: this.props.movie_id},
                 {headers: {'Authorization': `Token ${localStorage.getItem("token")}`}}
             )
                 .then((response) => {
