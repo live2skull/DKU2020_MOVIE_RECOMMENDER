@@ -5,6 +5,11 @@
 
 *.log
 
+# export doxygen
+/html
+/latex
+
+/static
 
 # ignore static files
 static
