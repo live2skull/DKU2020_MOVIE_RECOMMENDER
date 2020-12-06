@@ -12,7 +12,7 @@
 
 ### 소개자료
 
-- 발표 자료 : [구글 드라이브 링크](https://)
+- 발표 자료 : [구글 드라이브 링크](https://drive.google.com/file/d/1eRYdDwKYqA7KQy_Uaucqhw0Ls5CBOKxj/view?usp=sharing)
 - 개발 보고서 : [구글 드라이브 링크](https://)
 
 ## 구성요소
