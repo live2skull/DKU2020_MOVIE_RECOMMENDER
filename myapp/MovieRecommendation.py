@@ -1,23 +1,25 @@
+## 영화 추천 기능 정의 집합입니다.
+# @package myapp.MovieRecommendation
+
 import warnings
 from decimal import Decimal
 from typing import Generator, List, Set
-
 from logging import getLogger
-
 from django.db.models import QuerySet, Q
-from django.db.models.aggregates import Avg
 
-from .NaverMovieParser import NaverMovieParser
-from .NaverMovieRequester import NaverMovieRequester
-
-from .models import Movie, Genre, Actor, MovieUserComment, MovieParseHistory, MovieUser
+from .models import Movie, Genre, Actor, MovieUserComment, MovieUser
 from .models import User, UserComment
 
 logger = getLogger(__name__)
 
+
+## User based 추천 알고리즘에서 매칭할 최대 사용자 수 입니다.
 MAX_MATCHED_USERS = 100
+## User based 추천 알고리즘에서 매칭할 사용자별 최대 평가 수 입니다.
 MAX_COMMENTS_EACH_MATCHED_USER = 20
 
+
+## 영화 추천 클래스 (MovieRecommendation)의 오류를 정의합니다.
 class RecommendationException(Exception):
 
     detail = None # type: str
@@ -29,18 +31,16 @@ class RecommendationException(Exception):
         return self.detail
 
 
+## 영화 추천 기능을 제공합니다.
 class MovieRecommendation:
 
+    ## User based 알고리즘으로 추천 영화 리스트를 반환합니다.
+    # 사용자는 최소 2개부터 최대 5개까지의 영화를 선택한 상태여야 합니다.
+    #  @param user: 영화 추천 대상 사용자입니다.
+    #  @param allowance: 허용할 별점의 오차입니다. 기본값은 3입니다.
+    #  @param maximum: 최대 결과의 갯수입니다. 기본값은 30입니다.
+    #  @return: 추천될 영화 리스트입니다.
     def get_recommendations_user_based(self, user: User, allowance=2, maximum=30) -> List[Movie]:
-        """
-        User based 알고리즘으로 추천 영화 리스트를 반환합니다.
-        사용자는 최대 5개까지의 영화 선택이 가능합니다.
-
-        :param user: 영화 추천 대상 사용자입니다.
-        :param allowance: 허용할 별점의 오차입니다. 기본값은 3입니다.
-        :param maximum: 최대 결과의 갯수입니다. 기본값은 30입니다.
-        :return: 추천될 영화 리스트입니다.
-        """
 
         ## 2020. 11. 24 수정
         ## maximum 값은 사실상 전체 실행 속도에 크게 의미가 없으며,
@@ -107,9 +107,12 @@ class MovieRecommendation:
 
 
 
+    ## Item based 알고리즘으로 추천 영화 리스트를 반환합니다.
+    # @warning: 구현되지 않았습니다.
     def get_recommendations_item_based(self, movie: Movie) -> List[Movie]:
         raise NotImplementedError("아직 구현되지 않았습니다.")
 
-
+    ## Item based 알고리즘을 위한 아이템별 상관계수를 계산합니다.
+    # @warning: 구현되지 않았습니다.
     def process_item_based_relation_value(self, src: Movie, dest: Movie) -> Decimal:
         raise NotImplementedError("아직 구현되지 않았습니다.")

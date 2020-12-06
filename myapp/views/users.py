@@ -1,18 +1,19 @@
+## 사용자와 관련된 기능을 제공하는 view 클래스의 집합입니다.
+# @package myapp.views.users
+
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from django.db.models import QuerySet
-from django.contrib.auth import authenticate
 from django.http.response import HttpResponseNotFound
-
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet, GenericViewSet, ViewSet
+from rest_framework.viewsets import GenericViewSet
 from rest_framework.exceptions import ValidationError
 from rest_framework.authtoken.models import Token
 
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework import generics, mixins, views
+from rest_framework import mixins
 
 from sentry_sdk import capture_exception
 
@@ -24,22 +25,12 @@ from ..serializers.user import UserModelSerializer, UserActionResSerializer,\
 
 from . import PreFlightSupportAPIViewMixin
 
-import hashlib
-from binascii import hexlify
-
-## 로그인 및 회원가입 기능에 대해 다룹니다.
-## 회원가입, 로그인, 로그아웃 기능에 대해서만 기술합니다.
-## 사용자 정보 출력
-
 from logging import getLogger
 logger = getLogger(__name__)
 
 
-## https://sss20-02.tistory.com/66
-## https://ssungkang.tistory.com/entry/Django-APIView-Mixins-generics-APIView-ViewSet%EC%9D%84-%EC%95%8C%EC%95%84%EB%B3%B4%EC%9E%90
 
-
-
+## 사용자 로그인 기능을 제공합니다.
 class UserLoginActionView(APIView):
 
     def post(self, request: Request):
@@ -88,6 +79,7 @@ class UserLoginActionView(APIView):
             return Response(res_serializer.data)
 
 
+## 사용자 회원가입 기능을 제공합니다.
 class UserJoinActionView(APIView):
 
 
@@ -125,11 +117,7 @@ class UserJoinActionView(APIView):
         return Response(res_serializer.data)
 
 
-"""
-APIView 는 최소한의 코드만 구현되어 있습니다.
-인증 등을 제외한 나머지 기능은 직접 구현합니다.
-"""
-
+## 사용자 로그아웃 기능을 제공합니다.
 class UserLogoutActionView(PreFlightSupportAPIViewMixin, APIView):
 
     permission_classes = (IsAuthenticated, )
@@ -145,6 +133,7 @@ class UserLogoutActionView(PreFlightSupportAPIViewMixin, APIView):
         return Response(res_serializer.data)
 
 
+## 사용자 리뷰 작성 및 수정 기능을 제공합니다.
 class UserCommentEditActionView(PreFlightSupportAPIViewMixin, APIView):
 
     permission_classes = (IsAuthenticated,)
@@ -178,6 +167,7 @@ class UserCommentEditActionView(PreFlightSupportAPIViewMixin, APIView):
         return Response(res_serializer.data)
 
 
+## 사용자 리뷰 삭제 기능을 제공합니다.
 class UserCommentDeleteActionView(PreFlightSupportAPIViewMixin, APIView):
 
     permission_classes = (IsAuthenticated,)
@@ -208,6 +198,7 @@ class UserCommentDeleteActionView(PreFlightSupportAPIViewMixin, APIView):
         return Response(res_serializer.data)
 
 
+## 사용자가 작성한 리뷰를 출력합니다.
 class UserMyMovieCommentView(PreFlightSupportAPIViewMixin, APIView):
 
     permission_classes = (IsAuthenticated, )
@@ -234,7 +225,7 @@ class UserMyMovieCommentView(PreFlightSupportAPIViewMixin, APIView):
             return Response(serializer.data)
 
 
-
+## 로그인된 현재 사용자 정보를 출력합니다.
 class UserMyInfoView(PreFlightSupportAPIViewMixin, APIView):
 
     permission_classes = (IsAuthenticated,)
@@ -244,32 +235,36 @@ class UserMyInfoView(PreFlightSupportAPIViewMixin, APIView):
         return Response(serializer.data)
 
 
-
+## 전체 사용자 정보를 출력합니다.
 class UserView(mixins.RetrieveModelMixin, GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserModelSerializer
 
-    ## 여기서 Action을 사용한다면, PK가 필요하게 됩니다.
-    ## 따라서 Action으로 작성하지 않고, 별도의 APIView로 기능을 분리하여 작성합니다.
+    ### 여기서 Action을 사용한다면, PK가 필요하게 됩니다.
+    ### 따라서 Action으로 작성하지 않고, 별도의 APIView로 기능을 분리하여 작성합니다.
 
 
-## https://sss20-02.tistory.com/66
+### https://sss20-02.tistory.com/66
 
 mvRouter = DefaultRouter()
 mvRouter.register('users', UserView)
 
-urlpatters_action = [
+
+## 구현된 view에 대한 URL 정의입니다.
+urlpatterns = [
+    ### ActionView 정의
     path('myinfo', UserMyInfoView.as_view()),
     path('login', UserLoginActionView.as_view()),
     path('logout', UserLogoutActionView.as_view()),
     path('join', UserJoinActionView.as_view()),
     path('edit_comment', UserCommentEditActionView.as_view()),
     path('delete_comment', UserCommentDeleteActionView.as_view()),
-    path('my_comment/<int:movie_id>', UserMyMovieCommentView.as_view())
-]
+    path('my_comment/<int:movie_id>', UserMyMovieCommentView.as_view()),
 
-urlpatterns = [
-    ## 이렇게 하면 URL 우선순위에 의해 해당 요청을 먼저 확인할 수 있습니다.
-    path('users/', include(urlpatters_action)),
+    ### ModelView - Router 정의
     path('', include(mvRouter.urls)),
 ]
+
+### https://sss20-02.tistory.com/66
+### https://ssungkang.tistory.com/entry/Django-APIView-Mixins-generics-APIView-ViewSet%EC%9D%84-%EC%95%8C%EC%95%84%EB%B3%B4%EC%9E%90
+### APIView 는 최소한의 코드만 구현되어 있습니다. 인증 등을 제외한 나머지 기능은 직접 구현합니다.

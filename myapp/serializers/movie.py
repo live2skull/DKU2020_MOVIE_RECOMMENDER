@@ -1,23 +1,25 @@
+## 영화 정보 (/data/movies) 요청에 관한 serializer 클래스의 집합입니다.
+# @package myapp.serializers.movie
+
 from rest_framework.serializers import ModelSerializer
 from rest_framework.fields import CharField, IntegerField, BooleanField, DecimalField
-
 from django.db.models.aggregates import Avg
-
 from ..models import Movie, MovieUserComment, Actor, Genre
 
+## Actor ORM 객체 Serializer입니다.
 class ActorModelSerializer(ModelSerializer):
     class Meta:
         model = Actor
         fields = '__all__'
 
-
-
+## Genre ORM 객체 Serializer입니다.
 class GenreModelSerializer(ModelSerializer):
     class Meta:
         model = Genre
         fields = '__all__'
 
 
+## Movie ORM 객체 Serializer입니다.
 class MovieModelSerializer(ModelSerializer):
 
     actors = ActorModelSerializer(many=True, read_only=True)
@@ -27,12 +29,6 @@ class MovieModelSerializer(ModelSerializer):
 
     def to_representation(self, instance):
         d = super().to_representation(instance) # type: dict
-
-        # assert isinstance(instance, Movie)
-        # score_avg = instance.comments_movie.aggregate(avg=Avg('score'))['avg']
-        # d.setdefault("score_avg", score_avg)
-
-        ## 평균 평점 정보를 수집합니다. (average_score)
         return d
 
     class Meta:
@@ -40,8 +36,9 @@ class MovieModelSerializer(ModelSerializer):
         fields = '__all__'
 
 
-## ForeignKey 필드를 별도로 serializer에 작성하지 않으면 해당 키의 primary 키가 key_id 가 아닌 key로 출력됩니다.
+### ForeignKey 필드를 별도로 serializer에 작성하지 않으면 해당 키의 primary 키가 key_id 가 아닌 key로 출력됩니다.
 
+## MovieUserCoimment ORM 객체 Serializer입니다.
 class MovieUserCommentModelSerializer(ModelSerializer):
 
     def to_representation(self, instance):

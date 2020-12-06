@@ -1,29 +1,29 @@
+## 서비스 API의 구현체의 집합입니다.
+# @package myapp.views
+
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, BasePermission, BasePermissionMetaclass
 
+## 표준 Pagnation을 위한 클래스입니다.
+# rest_framework.pagnation.PageNumberPagnation 을 상속해 사용합니다.
 class StandardPagnation(PageNumberPagination):
     page_size = 10
     max_page_size = 10
     page_query_param = 'page'
 
 
-## TODO: ListAPIVIew 및 하위 구현 클래스에도 적용 가능한가?
-
+## OPTIONS 요청에 대해 모든 요청을 허용하고, 기본 동작을 실행합니다.
+# APIViewMixin 으로써 APIView에 믹스인하여 사용합니다.
 class PreFlightSupportAPIViewMixin:
 
-    """
-    OPTIONS 요쳥이 들어왔을 경우, 모든 요청을 허용하고 기본 동작을 실행합니다.
-
-    [확인사항] 제대로 동작하지 않을 경우, URL 이 정확한지 (끝부분의 '/' 문자 등) 확인해야 합니다.
-    """
-
-
+    ## OPTIONS 요청에 대해 체크할 권한입니다. 기본값은 AllowAny 입니다.
     permission_class = AllowAny
 
     def __init__(self):
         # BasePermission이 아닌 BasePermissionMetaclass입니다.
         # TODO: MetaClass, 타입 및 object type compare에 대해 알아보기.
         assert isinstance(self.permission_class, BasePermissionMetaclass)
+
 
     def get_permissions(self):
         # views.py -> get_permission() 참조

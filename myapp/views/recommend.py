@@ -1,40 +1,27 @@
+## 영화 추천 정보를 제공하는 view 클래스의 집합입니다.
+# @package myapp.views.recommend
+
 from django.urls import path, include
 from typing import List
-from rest_framework.routers import DefaultRouter
-
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
-from rest_framework.generics import ListAPIView
-from rest_framework.pagination import PageNumberPagination
-from django_filters import rest_framework as filters
-
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
-
-
-from ..models import MovieUser, Movie, User
+from ..models import Movie
 from ..serializers.movie import MovieModelSerializer
-
-from . import StandardPagnation
-
-
 from ..MovieRecommendation import MovieRecommendation
 from . import PreFlightSupportAPIViewMixin
 
+## 추천 정보 제공을 위한 MovieRecommendation 클래스의 인스턴스입니다.
 recommendation = MovieRecommendation()
 
-
+## 사용자에게 User-Based 기반 알고리즘으로 추천 영화 리스트를 제공합니다.
+# 사용자는 2개 이상, 5개 이하의 리뷰를 작성해야 합니다.
 class UserBasedRecommendView(PreFlightSupportAPIViewMixin, APIView):
 
     permission_classes = (IsAuthenticated,)
 
     def get(self, request: Request, ):
-        """
-        Return a list of all users.
-        """
-
         ## 현재 인증된 사용자에 대해 수행합니다.
 
         recommends = recommendation.get_recommendations_user_based(
@@ -47,7 +34,7 @@ class UserBasedRecommendView(PreFlightSupportAPIViewMixin, APIView):
         return Response(serializer.data)
 
 
+## 구현된 view에 대한 URL 정의입니다.
 urlpatterns = [
-    # path('<int:user_id>', UserBasedRecommendView.as_view()),
     path('', UserBasedRecommendView.as_view()),
 ]

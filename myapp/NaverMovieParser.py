@@ -1,33 +1,33 @@
-from sentry_sdk import capture_exception
+## 네이버 영화 파싱 기능을 제공합니다.
+# @package myapp.NaverMovieParser
 
-from typing import Generator
+
+from sentry_sdk import capture_exception
+from typing import Iterator, Optional
 from datetime import date
 import lxml.html
 from lxml.html import HtmlElement
 from parse import parse
-
 import logging
-
 from .raw_models import RMovie, RMovieUserComment
-
 logger = logging.getLogger(__name__)
 
-class NaverMovieParser:
-    '''
-    네이버 영화로부터 전달받은 HTML 데이터 페이지를 RawModel 로 파싱하는 구현체입니다.
-    '''
 
+## 네이버 영화로 서비스부터 전달받은 HTML 데이터를 RawModel로 파싱하는 기능을 제공합니다.
+# 각 메서드는 파싱된 문자열 또는 임시 객체(R...) / 제네레이터를 반환합니다.
+class NaverMovieParser:
+
+    ## HTML문서를 입력한 HtmlElement 객체를 초기화하여 반환합니다.
+    # @return: HtmlElement 객체
     def init_lxml(self, ret: str) -> HtmlElement:
         return lxml.html.document_fromstring(ret)
 
-
-    def parse_showing_movie_list(self, raw: str) -> Generator[int, int, None]:
-        """
-        현재 상영중인 영화 정보를 파싱합니다.
-        """
+    ## 현재 상영중인 영화 정보를 파싱하는 제네레이터입니다.
+    # @param raw: HTML 문서입니다.
+    # @return: Iterator[int] 파싱된 영화 id (movie_id) 제네레이터입니다.
+    def parse_showing_movie_list(self, raw: str) -> Iterator[int]:
 
         html = self.init_lxml(raw)
-
         count = 0
 
         for elem in html.xpath("//ul[@class='lst_detail_t1']/li"): 
@@ -39,15 +39,12 @@ class NaverMovieParser:
             
         if count == 0:
             yield from []
-    
 
-    def parse_movie_info(self, raw: str) -> RMovie:
-        '''
-        영화 기본 정보를 파싱합니다.
-        :param raw:
-        :return:
-        '''
 
+    ## 영화 기본 정보를 파싱합니다.
+    # @param raw: HTML 문서입니다.
+    # @return: Optional[RMovie] 파싱된 영화 임시 객체입니다. 파싱이 불가능할 경우 None 입니다.
+    def parse_movie_info(self, raw: str) -> Optional[RMovie]:
         html = self.init_lxml(raw)
         ret = RMovie()
 
@@ -55,7 +52,7 @@ class NaverMovieParser:
         ret.name = None if not len(_name_elem) else _name_elem[0].text_content()
 
         if ret.name is None:
-            return None
+            return
 
         try:
 
@@ -121,26 +118,20 @@ class NaverMovieParser:
         return ret
 
 
+    ## 영화 포스터 페이지를 파싱합니다.
+    # @param raw: HTML 문서입니다.
+    # @return: str 파싱된 URL 입니다.
     def parse_movie_poster_url(self, raw: str) -> str:
-        """
-        영화 포스터 페이지를 파싱합니다.
-        :param raw:
-        :return:
-        """
-
         html = self.init_lxml(raw)
 
         _img_url_elem = html.xpath("//img[@id='targetImage']")
         return None if not len(_img_url_elem) else _img_url_elem[0].attrib["src"]
 
 
-    def parse_recommends_from_movie_page(self, raw: str) -> Generator:
-        """
-        각 영화 페에지의 평점 정보를 파싱합니다.
-        :param raw:
-        :return:
-        """
-
+    ## 각 영화 페이지의 평점 정보를 파싱하는 제네레이터입니다.
+    # @param raw: HTML 문서입니다.
+    # @return: Iterator[RMovieUserComment] 파싱된 외부 사용자 평가 임시 객체의 제네레이터입니다.
+    def parse_recommends_from_movie_page(self, raw: str) -> Iterator[RMovieUserComment]:
         html = self.init_lxml(raw)
         count = 0
 
@@ -184,12 +175,10 @@ class NaverMovieParser:
             yield from []
 
 
-    def parse_recommends_from_user_page(self, raw: str) -> Generator:
-        """
-        각 사용자별 페이지의 평점 정보를 파싱합니다.
-        :param raw:
-        :return:
-        """
+    ## 각 사용자별 페이지의 평점 정보를 파싱하는 제네레이터입니다.
+    # @param raw: HTML 문서입니다.
+    # @return: Iterator[RMovieUserComment] 파싱된 외부 사용자 평가 임시 객체의 제네레이터입니다.
+    def parse_recommends_from_user_page(self, raw: str) -> Iterator[RMovieUserComment]:
 
         html = self.init_lxml(raw)
         count = 0

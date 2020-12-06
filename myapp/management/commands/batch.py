@@ -1,14 +1,18 @@
+## 영화 수집을 위한 구현입니다.
+# @package myapp.management.commands.batch
+
 from django.core.management.base import BaseCommand, CommandParser
 from django.core.management.base import CommandError
 
 from myapp.NaverMovieClient import NaverMovieClient
 from myapp.models import MovieUser, Movie
-
-from typing import Generator
-
+from typing import Iterator
 
 
-# NaverMovieClientBatchCommand
+## (batch) 영화 수집 자동화를 위한 기능입니다.
+# --task movie_current_showing : 현재 상영 중인 영화와 평가 정보를 수집
+# --task movie_from_recommends : 평가 정보가 입력된 영화와 해당 평가 정보를 추가 수집
+# --task recommend_info : 수집된 평가 정보에 대해 고유 사용자를 지정
 class Command(BaseCommand):
 
     help = "영화 및 추천 정보를 자동으로 수집합니다."
@@ -48,17 +52,17 @@ class Command(BaseCommand):
         if task == 'movie_current_showing':
             generator = client.process_movie_current_showing(
                 process_recommends=process_recommends, ignore_hitted_movie=ignore_hitted_movie
-            ) # type: Generator[Movie, int, None]
+            ) # type: Iterator[Movie]
             for movie in generator:
                 print('영화 처리 : id=%s' % movie.id)
 
         elif task == 'recommend_info':
-            generator = client.process_recommend_info(count=recommend_count) # type: Generator[MovieUser, int, None]
+            generator = client.process_recommend_info(count=recommend_count) # type: Iterator[MovieUser]
             for movieUser in generator: # type: MovieUser
                 print('사용자 처리 : id=%s' % movieUser.id)
 
         elif task == 'movie_from_recommends':
-            generator = client.process_movie_from_recommends(count=recommend_count) # type: Generator[Movie, int, None]
+            generator = client.process_movie_from_recommends(count=recommend_count) # type: Iterator[Movie]
             for movie in generator:
                 print('영화 처리 : id=%s' % movie.id)
 
@@ -66,6 +70,6 @@ class Command(BaseCommand):
             raise CommandError("일치하는 명렁어가 없습니다. 'manage.py task --help' 로 명령을 확인하세요.")
 
 
-## 기존에 몰랐던 내용
-# 상속 가능한 클래스 제작 시 반드시 구현할 필요가 없는 함수 : 함수 선언 후 pass 키워드 사용
-# 상속 가능한 클래스 제작 시 반드시 구현해야 하는 함수 : 함수 선언 후 raise NotImplementedError("message") 작성
+### 기존에 몰랐던 내용
+### 상속 가능한 클래스 제작 시 반드시 구현할 필요가 없는 함수 : 함수 선언 후 pass 키워드 사용
+### 상속 가능한 클래스 제작 시 반드시 구현해야 하는 함수 : 함수 선언 후 raise NotImplementedError("message") 작성

@@ -1,9 +1,10 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+## 서비스 API의 URL을 정의합니다.
+# @package myapp.urls
 
-from .views_model.movie import urlpatterns as urlpatterns_movie
-from .views_model.recommend import urlpatterns as urlpatterns_recommend
-from .views_model.users import urlpatterns as urlpatterns_user
+from django.urls import path, include
+from .views.movie import urlpatterns as urlpatterns_movie
+from .views.recommend import urlpatterns as urlpatterns_recommend
+from .views.users import urlpatterns as urlpatterns_user
 
 urlpatterns = [
     path('data/', include(urlpatterns_movie)),

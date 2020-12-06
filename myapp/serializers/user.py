@@ -1,15 +1,13 @@
-from abc import ABC
-
+## 사용자 정보 (/data/users) 요청에 관한 serializer 클래스의 집합입니다.
+# @package myapp.serializers.user
 
 from rest_framework.serializers import ModelSerializer, Serializer
 from rest_framework.fields import CharField, IntegerField, BooleanField, DecimalField
 from rest_framework.exceptions import ValidationError
-
 from ..models import User, UserComment
 
 
-## TODO: ModelSerializer를 상속받으면, 해당 기능을 정확히 어떻게 상속하는지? (예: 필드 등)
-
+## UserComment ORM 객체 Serializer입니다.
 class UserMyMovieCommentResSerializer(ModelSerializer):
 
     def to_representation(self, instance: UserComment):
@@ -30,6 +28,7 @@ class UserMyMovieCommentResSerializer(ModelSerializer):
         fields = '__all__'
 
 
+## User ORM 객체 Serializer입니다.
 class UserModelSerializer(ModelSerializer):
 
     comments = UserMyMovieCommentResSerializer(many=True)
@@ -45,16 +44,17 @@ class UserModelSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        # exclude = ('password', 'is_superuser', 'last_login')
         fields = ('id', 'comments', 'username', 'email',)
 
 
+## 사용자 로그인 Action 요청 Serializer입니다.
 class UserLoginReqSerializer(Serializer):
 
     email = CharField(required=True)
     password = CharField(required=True)
 
 
+## 사용자 회원가입 Action 요청 Serializer입니다.
 class UserJoinReqSerializer(Serializer):
 
     email = CharField(required=True)
@@ -85,6 +85,7 @@ class UserJoinReqSerializer(Serializer):
         return True
 
 
+## 사용자 평가 정보 작성 / 수정 Action 요청 Serializer입니다.
 class UserCommentEditReqSerializer(Serializer):
 
     movie_id = IntegerField(required=True)
@@ -92,14 +93,18 @@ class UserCommentEditReqSerializer(Serializer):
     body = CharField(required=False)
 
 
+## 사용자 평가 정보 삭제 Action 요청 Serializer입니다.
 class UserCommentDelReqSerializer(Serializer):
 
     movie_id = IntegerField(required=True)
 
 
-
+## 사용자의 Action 에 대한 응답 Serializer입니다.
 class UserActionResSerializer(Serializer):
 
     result = BooleanField(required=True)
     error_message = CharField(required=False, default=None)
     auth_token = CharField(required=False)
+
+
+### TODO: ModelSerializer를 상속받으면, 해당 기능을 정확히 어떻게 상속하는지? (예: 필드 등)
