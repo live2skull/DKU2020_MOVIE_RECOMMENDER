@@ -10,10 +10,12 @@
 
 ![메인화면.PNG](/_images/메인화면.PNG)
 
-### 소개자료
+## 소개자료
 
 - 발표 자료 : [구글 드라이브 링크](https://drive.google.com/file/d/1eRYdDwKYqA7KQy_Uaucqhw0Ls5CBOKxj/view?usp=sharing)
 - 개발 보고서 : [구글 드라이브 링크](https://drive.google.com/file/d/1ZQhCGY2ctkJXhs36IoXn5ZB_UbYypAuT/view?usp=sharing)
+
+---
 
 ## 구성요소
 
